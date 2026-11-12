@@ -1,0 +1,8 @@
+# Local tool downloads and generated caches
+SKYKEEPERS_LUAU_PIPELINE/tools/
+SKYKEEPERS_LUAU_PIPELINE/checks/
+**/__pycache__/
+*.pyc
+*.blend1
+*.rbxl.lock
+*.rbxlx.lock

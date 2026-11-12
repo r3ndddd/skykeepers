@@ -1,0 +1,11 @@
+00:00.438  blend            | Read blend: "C:\SKYKEEPERS\SKYKEEPERS_ASSET_PIPELINE\runs\stage03_002\cloudwood_tree_v001\cloudwood_tree_v001.blend"
+Traceback (most recent call last):
+  File "C:\SKYKEEPERS\SKYKEEPERS_ASSET_PIPELINE\preview_assets.py", line 11, in <module>
+    scene.world.color=(.12,.12,.12)
+    ^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'color' and no __dict__ for setting new attributes
+
+Error: script failed, file: 'C:\SKYKEEPERS\SKYKEEPERS_ASSET_PIPELINE\preview_assets.py', exiting.
+Blender 5.3.0 (hash 02f0899d78e3 built 2026-11-10 01:33:43)
+
+Blender quit

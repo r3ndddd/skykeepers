@@ -1,0 +1,247 @@
+<roblox version="4">
+  <Item class="ServerScriptService" referent="0">
+    <Properties>
+      <string name="Name">ServerScriptService</string>
+    </Properties>
+    <Item class="Folder" referent="1">
+      <Properties>
+        <string name="Name">SK_LuauPipeline_Test</string>
+      </Properties>
+      <Item class="Script" referent="2">
+        <Properties>
+          <string name="Name">Runner</string>
+          <token name="RunContext">0</token>
+          <string name="Source"><![CDATA[--!strict
+-- Enabled only in the controlled Stage 0.4 test copy.
+local folder = game:GetService("ServerStorage"):WaitForChild("SK_LuauPipeline_Test")
+local result = require(folder.RunUnitTest)(require(folder.ResourceMath), require(folder.ResourceMath_Test))
+script:SetAttribute("RunCount", result.run)
+script:SetAttribute("Passed", result.passed)
+script:SetAttribute("Failed", result.failed)
+script:SetAttribute("Completed", true)
+script:SetAttribute("ResultsJSON", game:GetService("HttpService"):JSONEncode(result))
+assert(result.failed == 0, "Stage 0.4 test failure; see named results above")
+]]></string>
+        </Properties>
+      </Item>
+    </Item>
+  </Item>
+  <Item class="ServerStorage" referent="3">
+    <Properties>
+      <string name="Name">ServerStorage</string>
+    </Properties>
+    <Item class="Folder" referent="4">
+      <Properties>
+        <string name="Name">SK_LuauPipeline_Test</string>
+      </Properties>
+      <Item class="ModuleScript" referent="5">
+        <Properties>
+          <string name="Name">ResourceMath</string>
+          <string name="Source"><![CDATA[--!strict
+-- Pure arithmetic only. No currency, inventory, persistence or network writes.
+local ResourceMath = {}
+local EPSILON = 0.000001
+
+local function finite(value: any): boolean
+	return type(value) == "number" and value == value and math.abs(value) < math.huge
+end
+
+-- Contract: a nonempty dense array of {probability: number, price: number}.
+-- Invalid input returns false and a diagnostic; calculations raise on invalid input.
+function ResourceMath.ValidateDropTable(drops: any): (boolean, string?)
+	if type(drops) ~= "table" then
+		return false, "drops must be an array"
+	end
+	local count, maximum, total = 0, 0, 0
+	for key, row in pairs(drops) do
+		if not finite(key) or key < 1 or key % 1 ~= 0 then
+			return false, "drops must have positive integer array keys"
+		end
+		count += 1
+		maximum = math.max(maximum, key)
+		if type(row) ~= "table" then
+			return false, "each drop must be a record"
+		end
+		if not finite(row.probability) or row.probability < 0 then
+			return false, "probability must be finite and nonnegative"
+		end
+		if not finite(row.price) or row.price < 0 then
+			return false, "price must be finite and nonnegative"
+		end
+		total += row.probability
+	end
+	if count == 0 then
+		return false, "drops must not be empty"
+	end
+	if maximum ~= count then
+		return false, "drops must not contain holes"
+	end
+	if not finite(total) or math.abs(total - 1) > EPSILON then
+		return false, "probabilities must sum to 1 within 0.000001"
+	end
+	return true, nil
+end
+
+function ResourceMath.CalculateExpectedValue(drops: any): number
+	local valid, reason = ResourceMath.ValidateDropTable(drops)
+	assert(valid, reason)
+	local total = 0
+	for _, row in ipairs(drops) do
+		total += row.probability * row.price
+	end
+	assert(finite(total), "expected value overflow")
+	return total
+end
+
+function ResourceMath.CalculateRouteValue(expectedValue: any, count: any): number
+	assert(finite(expectedValue) and expectedValue >= 0, "expectedValue must be finite and nonnegative")
+	assert(finite(count) and count >= 0 and count % 1 == 0, "count must be a finite nonnegative integer")
+	local result = expectedValue * count
+	assert(finite(result), "route value overflow")
+	return result
+end
+
+return ResourceMath
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="6">
+        <Properties>
+          <string name="Name">ResourceMath_Test</string>
+          <string name="Source"><![CDATA[--!strict
+-- Contract tests; same injected-module convention as existing Economy.spec.
+return function(ResourceMath: any, t: any)
+	local function near(actual: number, expected: number)
+		assert(actual == actual and math.abs(actual - expected) <= 1e-6,
+			string.format("expected %.12g, got %.12g", expected, actual))
+	end
+	local function rejects(value: any)
+		local valid, reason = ResourceMath.ValidateDropTable(value)
+		assert(valid == false and type(reason) == "string")
+		assert(not pcall(ResourceMath.CalculateExpectedValue, value), "invalid drops must raise")
+	end
+	local zones = {
+		{ name = "Whispering Meadows", weights = {70, 25, 5}, prices = {5, 12, 30}, terms = {3.5, 3, 1.5}, ev = 8, count = 9, route = 72 },
+		{ name = "Crystal Ruins", weights = {55, 40, 5}, prices = {12, 30, 80}, terms = {6.6, 12, 4}, ev = 22.6, count = 7, route = 158.2 },
+		{ name = "Storm Temple", weights = {60, 38, 2}, prices = {30, 80, 220}, terms = {18, 30.4, 4.4}, ev = 52.8, count = 4, route = 211.2 },
+	}
+	for _, zone in ipairs(zones) do
+		local drops = {}
+		for i, weight in ipairs(zone.weights) do
+			drops[i] = { probability = weight / 100, price = zone.prices[i] }
+			-- Independent hand-derived contribution of each drop.
+			t.test(zone.name .. " contribution " .. i, function()
+				near(drops[i].probability * drops[i].price, zone.terms[i])
+			end)
+		end
+		-- Check probabilities without invoking production validation.
+		t.test(zone.name .. " probability sum", function()
+			local sum = 0
+			for _, row in ipairs(drops) do sum += row.probability end
+			near(sum, 1)
+			assert(ResourceMath.ValidateDropTable(drops))
+		end)
+		-- Expected value oracle uses 100 equally likely outcomes, not weighted multiplication.
+		t.test(zone.name .. " independent expectation", function()
+			local outcomeSum, outcomeCount = 0, 0
+			for i, weight in ipairs(zone.weights) do
+				for _ = 1, weight do
+					outcomeSum += zone.prices[i]
+					outcomeCount += 1
+				end
+			end
+			assert(outcomeCount == 100)
+			near(outcomeSum / outcomeCount, zone.ev)
+			near(ResourceMath.CalculateExpectedValue(drops), outcomeSum / outcomeCount)
+		end)
+		-- Route oracle uses repeated addition and the user-confirmed route total.
+		t.test(zone.name .. " route", function()
+			local reference = 0
+			for _ = 1, zone.count do reference += zone.ev end
+			near(reference, zone.route)
+			near(ResourceMath.CalculateRouteValue(ResourceMath.CalculateExpectedValue(drops), zone.count), zone.route)
+		end)
+	end
+
+	-- Each malformed fixture is independently rejected by validation and calculation.
+	local invalid: { { name: string, value: any } } = {
+		{ name = "empty drops", value = {} },
+		{ name = "sum above one", value = {{probability = 1.1, price = 5}} },
+		{ name = "sum below one", value = {{probability = 0.9, price = 5}} },
+		{ name = "negative price", value = {{probability = 1, price = -1}} },
+		{ name = "negative probability", value = {{probability = -0.1, price = 1}, {probability = 1.1, price = 1}} },
+		{ name = "wrong container type", value = "drops" },
+		{ name = "wrong row type", value = {5} },
+		{ name = "wrong probability type", value = {{probability = "1", price = 5}} },
+		{ name = "wrong price type", value = {{probability = 1, price = "5"}} },
+		{ name = "missing probability", value = {{price = 5}} },
+		{ name = "missing price", value = {{probability = 1}} },
+		{ name = "NaN probability", value = {{probability = 0/0, price = 5}} },
+		{ name = "NaN price", value = {{probability = 1, price = 0/0}} },
+		{ name = "infinite probability", value = {{probability = math.huge, price = 5}} },
+		{ name = "infinite price", value = {{probability = 1, price = math.huge}} },
+		{ name = "negative infinity", value = {{probability = 1, price = -math.huge}} },
+		{ name = "sparse array", value = {[1] = {probability = 0.5, price = 5}, [3] = {probability = 0.5, price = 5}} },
+		{ name = "dictionary keys", value = {drop = {probability = 1, price = 5}} },
+		{ name = "outside tolerance", value = {{probability = 1 + 2e-6, price = 5}} },
+	}
+	for _, fixture in ipairs(invalid) do
+		t.test(fixture.name, function() rejects(fixture.value) end)
+	end
+	-- Nil must not be lost from an array of fixtures.
+	t.test("nil drops", function() rejects(nil) end)
+	-- Small input rounding errors are accepted without renormalizing probabilities.
+	t.test("inside tolerance", function()
+		assert(ResourceMath.ValidateDropTable({{probability = 1 + 0.5e-6, price = 5}}))
+	end)
+	-- Zero probability and zero prices are valid.
+	t.test("zero price and probability", function()
+		near(ResourceMath.CalculateExpectedValue({{probability=0,price=100},{probability=1,price=0}}), 0)
+	end)
+	-- Zero gathers costs zero.
+	t.test("zero gathers", function() near(ResourceMath.CalculateRouteValue(8, 0), 0) end)
+	-- Invalid route inputs cannot produce plausible numeric answers.
+	for _, value in ipairs({-1, 0.5, math.huge, 0/0, "9"}) do
+		t.test("invalid count " .. tostring(value), function()
+			assert(not pcall(ResourceMath.CalculateRouteValue, 8, value))
+		end)
+	end
+	-- Invalid expected values must fail even with a valid count.
+	for _, value in ipairs({-1, math.huge, 0/0, "8"}) do
+		t.test("invalid expectation " .. tostring(value), function()
+			assert(not pcall(ResourceMath.CalculateRouteValue, value, 9))
+		end)
+	end
+	-- Finite operands can still overflow.
+	t.test("route overflow", function() assert(not pcall(ResourceMath.CalculateRouteValue, 1e308, 10)) end)
+end
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="7">
+        <Properties>
+          <string name="Name">RunUnitTest</string>
+          <string name="Source"><![CDATA[--!strict
+-- Deterministic pure harness. No external packages or runtime dependencies.
+return function(ResourceMath: any, cases: any)
+	local results = { run = 0, passed = 0, failed = 0, cases = {} }
+	local context = {}
+	function context.test(name: string, fn: () -> ())
+		results.run += 1
+		local ok, err = pcall(fn)
+		local status = if ok then "PASS" else "FAIL"
+		if ok then results.passed += 1 else results.failed += 1 end
+		table.insert(results.cases, { name = name, status = status, error = if ok then "" else tostring(err) })
+		print(string.format("[STAGE04][%s] %s%s", status, name, if ok then "" else " | " .. tostring(err)))
+	end
+	local ok, err = pcall(cases, ResourceMath, context)
+	if not ok then context.test("suite registration", function() error(tostring(err)) end) end
+	print(string.format("[STAGE04][SUMMARY] %d run, %d passed, %d failed", results.run, results.passed, results.failed))
+	return results
+end
+]]></string>
+        </Properties>
+      </Item>
+    </Item>
+  </Item>
+</roblox>

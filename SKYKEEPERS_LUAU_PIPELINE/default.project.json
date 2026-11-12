@@ -1,0 +1,19 @@
+{
+  "name": "SKYKEEPERS_STAGE_04_ONLY",
+  "serveAddress": "127.0.0.1",
+  "servePort": 34874,
+  "tree": {
+    "$className": "DataModel",
+    "$ignoreUnknownInstances": true,
+    "ServerStorage": {
+      "$className": "ServerStorage",
+      "$ignoreUnknownInstances": true,
+      "SK_LuauPipeline_Test": { "$path": "src/tests", "$ignoreUnknownInstances": true }
+    },
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "$ignoreUnknownInstances": true,
+      "SK_LuauPipeline_Test": { "$path": "src/server", "$ignoreUnknownInstances": true }
+    }
+  }
+}

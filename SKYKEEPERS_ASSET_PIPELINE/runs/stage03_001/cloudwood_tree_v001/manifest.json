@@ -1,0 +1,104 @@
+{
+  "asset_key": "cloudwood_tree_v001",
+  "title": "CLOUDWOOD TREE",
+  "target_studs": [
+    5,
+    8,
+    5
+  ],
+  "triangle_budget": 1500,
+  "blend": "C:\\SKYKEEPERS\\SKYKEEPERS_ASSET_PIPELINE\\runs\\stage03_001\\cloudwood_tree_v001\\cloudwood_tree_v001.blend",
+  "fbx": "C:\\SKYKEEPERS\\SKYKEEPERS_ASSET_PIPELINE\\runs\\stage03_001\\cloudwood_tree_v001\\cloudwood_tree_v001.fbx",
+  "fbx_bytes": 25116,
+  "sha256": "3b67e424f60301c1ce1e8c1df2eac3cd5ff8490df10b40e661ce6150f99d4225",
+  "export": "PASS",
+  "roundtrip": "PASS",
+  "roblox_import": "NOT_RUN",
+  "roblox_play": "NOT_RUN",
+  "reopen": "NOT_RUN",
+  "asset_id": null,
+  "meshes": {
+    "Canopy_East": {
+      "triangles": 20,
+      "center_m": [
+        0.4080348163843155,
+        -0.2591363787651062,
+        1.5713432431221008
+      ],
+      "size_m": [
+        0.5839304625988007,
+        0.8817270994186401,
+        0.6686567068099976
+      ],
+      "material": "Cloudwood_Foliage",
+      "linear_color": [
+        0.07999999821186066,
+        0.3199999928474426,
+        0.23000000417232513
+      ]
+    },
+    "Canopy_Main": {
+      "triangles": 20,
+      "center_m": [
+        -0.03264279663562775,
+        -0.2591363787651062,
+        1.9056716561317444
+      ],
+      "size_m": [
+        0.5839304029941559,
+        0.8817270994186401,
+        0.6686567068099976
+      ],
+      "material": "Cloudwood_Foliage",
+      "linear_color": [
+        0.07999999821186066,
+        0.3199999928474426,
+        0.23000000417232513
+      ]
+    },
+    "Canopy_Northwest": {
+      "triangles": 20,
+      "center_m": [
+        -0.4080348163843155,
+        0.2591364085674286,
+        1.6047762036323547
+      ],
+      "size_m": [
+        0.5839304625988007,
+        0.8817271590232849,
+        0.6686567068099976
+      ],
+      "material": "Cloudwood_Foliage",
+      "linear_color": [
+        0.07999999821186066,
+        0.3199999928474426,
+        0.23000000417232513
+      ]
+    },
+    "Trunk": {
+      "triangles": 24,
+      "center_m": [
+        -0.03264279663562775,
+        -0.24758824240416288,
+        0.6686567664146423
+      ],
+      "size_m": [
+        0.28641924262046814,
+        0.44334919191896915,
+        1.3373135328292847
+      ],
+      "material": "Cloudwood_Bark",
+      "linear_color": [
+        0.18000000715255737,
+        0.08500000089406967,
+        0.03500000014901161
+      ]
+    }
+  },
+  "size_m": [
+    1.4000000953674316,
+    1.3999998569488525,
+    2.240000009536743
+  ],
+  "triangles": 84
+}

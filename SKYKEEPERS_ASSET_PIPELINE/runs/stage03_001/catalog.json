@@ -1,0 +1,390 @@
+[
+  {
+    "asset_key": "cloudwood_tree_v001",
+    "title": "CLOUDWOOD TREE",
+    "target_studs": [
+      5,
+      8,
+      5
+    ],
+    "triangle_budget": 1500,
+    "blend": "C:\\SKYKEEPERS\\SKYKEEPERS_ASSET_PIPELINE\\runs\\stage03_001\\cloudwood_tree_v001\\cloudwood_tree_v001.blend",
+    "fbx": "C:\\SKYKEEPERS\\SKYKEEPERS_ASSET_PIPELINE\\runs\\stage03_001\\cloudwood_tree_v001\\cloudwood_tree_v001.fbx",
+    "fbx_bytes": 25116,
+    "sha256": "3b67e424f60301c1ce1e8c1df2eac3cd5ff8490df10b40e661ce6150f99d4225",
+    "export": "PASS",
+    "roundtrip": "PASS",
+    "roblox_import": "NOT_RUN",
+    "roblox_play": "NOT_RUN",
+    "reopen": "NOT_RUN",
+    "asset_id": null,
+    "meshes": {
+      "Canopy_East": {
+        "triangles": 20,
+        "center_m": [
+          0.4080348163843155,
+          -0.2591363787651062,
+          1.5713432431221008
+        ],
+        "size_m": [
+          0.5839304625988007,
+          0.8817270994186401,
+          0.6686567068099976
+        ],
+        "material": "Cloudwood_Foliage",
+        "linear_color": [
+          0.07999999821186066,
+          0.3199999928474426,
+          0.23000000417232513
+        ]
+      },
+      "Canopy_Main": {
+        "triangles": 20,
+        "center_m": [
+          -0.03264279663562775,
+          -0.2591363787651062,
+          1.9056716561317444
+        ],
+        "size_m": [
+          0.5839304029941559,
+          0.8817270994186401,
+          0.6686567068099976
+        ],
+        "material": "Cloudwood_Foliage",
+        "linear_color": [
+          0.07999999821186066,
+          0.3199999928474426,
+          0.23000000417232513
+        ]
+      },
+      "Canopy_Northwest": {
+        "triangles": 20,
+        "center_m": [
+          -0.4080348163843155,
+          0.2591364085674286,
+          1.6047762036323547
+        ],
+        "size_m": [
+          0.5839304625988007,
+          0.8817271590232849,
+          0.6686567068099976
+        ],
+        "material": "Cloudwood_Foliage",
+        "linear_color": [
+          0.07999999821186066,
+          0.3199999928474426,
+          0.23000000417232513
+        ]
+      },
+      "Trunk": {
+        "triangles": 24,
+        "center_m": [
+          -0.03264279663562775,
+          -0.24758824240416288,
+          0.6686567664146423
+        ],
+        "size_m": [
+          0.28641924262046814,
+          0.44334919191896915,
+          1.3373135328292847
+        ],
+        "material": "Cloudwood_Bark",
+        "linear_color": [
+          0.18000000715255737,
+          0.08500000089406967,
+          0.03500000014901161
+        ]
+      }
+    },
+    "size_m": [
+      1.4000000953674316,
+      1.3999998569488525,
+      2.240000009536743
+    ],
+    "triangles": 84
+  },
+  {
+    "asset_key": "skyglass_crystal_v001",
+    "title": "SKYGLASS CRYSTAL",
+    "target_studs": [
+      2,
+      3,
+      2
+    ],
+    "triangle_budget": 500,
+    "blend": "C:\\SKYKEEPERS\\SKYKEEPERS_ASSET_PIPELINE\\runs\\stage03_001\\skyglass_crystal_v001\\skyglass_crystal_v001.blend",
+    "fbx": "C:\\SKYKEEPERS\\SKYKEEPERS_ASSET_PIPELINE\\runs\\stage03_001\\skyglass_crystal_v001\\skyglass_crystal_v001.fbx",
+    "fbx_bytes": 20892,
+    "sha256": "118d78e8943d8d7468a0e2a23837090b5f55da04a8162958bc0a4887e6079efd",
+    "export": "PASS",
+    "roundtrip": "PASS",
+    "roblox_import": "NOT_RUN",
+    "roblox_play": "NOT_RUN",
+    "reopen": "NOT_RUN",
+    "asset_id": null,
+    "meshes": {
+      "Crystal_East": {
+        "triangles": 18,
+        "center_m": [
+          0.2133665829896927,
+          -0.01458662562072277,
+          0.21000001579523087
+        ],
+        "size_m": [
+          0.12469223141670227,
+          0.13448089733719826,
+          0.25200001895427704
+        ],
+        "material": "Skyglass_Cyan",
+        "linear_color": [
+          0.02500000037252903,
+          0.47999998927116394,
+          0.8500000238418579
+        ]
+      },
+      "Crystal_Main": {
+        "triangles": 22,
+        "center_m": [
+          0.0,
+          -0.01458662748336792,
+          0.469000019133091
+        ],
+        "size_m": [
+          0.4020810127258301,
+          0.3571673333644867,
+          0.7420000284910202
+        ],
+        "material": "Skyglass_Cyan",
+        "linear_color": [
+          0.02500000037252903,
+          0.47999998927116394,
+          0.8500000238418579
+        ]
+      },
+      "Stone_Base": {
+        "triangles": 24,
+        "center_m": [
+          0.0,
+          0.0,
+          0.0560000017285347
+        ],
+        "size_m": [
+          0.5600000023841858,
+          0.5600000023841858,
+          0.1120000034570694
+        ],
+        "material": "Skyglass_Stone",
+        "linear_color": [
+          0.10999999940395355,
+          0.17000000178813934,
+          0.23999999463558197
+        ]
+      }
+    },
+    "size_m": [
+      0.5600000023841858,
+      0.5600000023841858,
+      0.8400000333786011
+    ],
+    "triangles": 64
+  },
+  {
+    "asset_key": "starbloom_plant_v001",
+    "title": "STARBLOOM PLANT",
+    "target_studs": [
+      2,
+      2,
+      2
+    ],
+    "triangle_budget": 500,
+    "blend": "C:\\SKYKEEPERS\\SKYKEEPERS_ASSET_PIPELINE\\runs\\stage03_001\\starbloom_plant_v001\\starbloom_plant_v001.blend",
+    "fbx": "C:\\SKYKEEPERS\\SKYKEEPERS_ASSET_PIPELINE\\runs\\stage03_001\\starbloom_plant_v001\\starbloom_plant_v001.fbx",
+    "fbx_bytes": 40092,
+    "sha256": "35691acb58ebf920e009cc2b92c223f40d963ebbcee801f65707485d73571115",
+    "export": "PASS",
+    "roundtrip": "PASS",
+    "roblox_import": "NOT_RUN",
+    "roblox_play": "NOT_RUN",
+    "reopen": "NOT_RUN",
+    "asset_id": null,
+    "meshes": {
+      "Flower_Core": {
+        "triangles": 20,
+        "center_m": [
+          -0.009659908711910248,
+          0.0,
+          0.3822222203016281
+        ],
+        "size_m": [
+          0.37699995934963226,
+          0.36442598700523376,
+          0.35555556416511536
+        ],
+        "material": "Starbloom_Core",
+        "linear_color": [
+          0.8999999761581421,
+          0.550000011920929,
+          0.07000000029802322
+        ]
+      },
+      "Leaf_East": {
+        "triangles": 20,
+        "center_m": [
+          0.07042505964636803,
+          0.0,
+          0.17777776718139648
+        ],
+        "size_m": [
+          0.37699998170137405,
+          0.36442598700523376,
+          0.35555553436279297
+        ],
+        "material": "Starbloom_Leaves",
+        "linear_color": [
+          0.03999999910593033,
+          0.25,
+          0.12999999523162842
+        ]
+      },
+      "Leaf_Northwest": {
+        "triangles": 20,
+        "center_m": [
+          -0.07288489118218422,
+          0.05140966176986694,
+          0.2222222089767456
+        ],
+        "size_m": [
+          0.37699996680021286,
+          0.36442598700523376,
+          0.35555553436279297
+        ],
+        "material": "Starbloom_Leaves",
+        "linear_color": [
+          0.03999999910593033,
+          0.25,
+          0.12999999523162842
+        ]
+      },
+      "Petal_0": {
+        "triangles": 20,
+        "center_m": [
+          0.09150002896785736,
+          0.0,
+          0.35555553436279297
+        ],
+        "size_m": [
+          0.37699994444847107,
+          0.36442598700523376,
+          0.35555553436279297
+        ],
+        "material": "Starbloom_Petals",
+        "linear_color": [
+          0.41999998688697815,
+          0.11999999731779099,
+          0.6200000047683716
+        ]
+      },
+      "Petal_1": {
+        "triangles": 20,
+        "center_m": [
+          0.02160022407770157,
+          0.09778700023889542,
+          0.35555553436279297
+        ],
+        "size_m": [
+          0.37699995934963226,
+          0.36442600190639496,
+          0.35555553436279297
+        ],
+        "material": "Starbloom_Petals",
+        "linear_color": [
+          0.41999998688697815,
+          0.11999999731779099,
+          0.6200000047683716
+        ]
+      },
+      "Petal_2": {
+        "triangles": 20,
+        "center_m": [
+          -0.09150002524256706,
+          0.0604356974363327,
+          0.35555553436279297
+        ],
+        "size_m": [
+          0.37699995189905167,
+          0.36442601680755615,
+          0.35555553436279297
+        ],
+        "material": "Starbloom_Petals",
+        "linear_color": [
+          0.41999998688697815,
+          0.11999999731779099,
+          0.6200000047683716
+        ]
+      },
+      "Petal_3": {
+        "triangles": 20,
+        "center_m": [
+          -0.09150002524256706,
+          -0.0604356974363327,
+          0.35555553436279297
+        ],
+        "size_m": [
+          0.37699995189905167,
+          0.36442601680755615,
+          0.35555553436279297
+        ],
+        "material": "Starbloom_Petals",
+        "linear_color": [
+          0.41999998688697815,
+          0.11999999731779099,
+          0.6200000047683716
+        ]
+      },
+      "Petal_4": {
+        "triangles": 20,
+        "center_m": [
+          0.02160022407770157,
+          -0.09778700023889542,
+          0.35555553436279297
+        ],
+        "size_m": [
+          0.37699995934963226,
+          0.36442600190639496,
+          0.35555553436279297
+        ],
+        "material": "Starbloom_Petals",
+        "linear_color": [
+          0.41999998688697815,
+          0.11999999731779099,
+          0.6200000047683716
+        ]
+      },
+      "Stem": {
+        "triangles": 24,
+        "center_m": [
+          -0.009659913834184408,
+          0.0009545926004648209,
+          0.20444443076848984
+        ],
+        "size_m": [
+          0.03698387462645769,
+          0.03664806857705116,
+          0.24888886511325836
+        ],
+        "material": "Starbloom_Leaves",
+        "linear_color": [
+          0.03999999910593033,
+          0.25,
+          0.12999999523162842
+        ]
+      }
+    },
+    "size_m": [
+      0.5600000023841858,
+      0.5600000023841858,
+      0.5600000023841858
+    ],
+    "triangles": 184
+  }
+]

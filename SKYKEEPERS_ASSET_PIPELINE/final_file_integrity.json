@@ -1,0 +1,40 @@
+[
+  {
+    "key": "cloudwood_tree_v001",
+    "fbx_bytes": 25084,
+    "sha256": "210084e952854edc0a41c2cf347f8b9fb6aa45adb84ae98dffae6f0e1655d6c1",
+    "unchanged": true
+  },
+  {
+    "key": "skyglass_crystal_v001",
+    "fbx_bytes": 20892,
+    "sha256": "35e1c8324dd8430ca691e605c088901210dbbbe9e041a349bd3c7bebeafce3d8",
+    "unchanged": true
+  },
+  {
+    "key": "starbloom_plant_v001",
+    "fbx_bytes": 40108,
+    "sha256": "c7f99272fae3f40b26051aa4de8bad066e6e043d2382ec46e25cdfb05e9a000e",
+    "unchanged": true
+  },
+  {
+    "path": "C:\\SKYKEEPERS\\blender_roblox_pipeline_test_20261109\\SkyHeart.blend",
+    "unchanged": true,
+    "sha256": "CB5232A0940F77D807755E7336DD42E283950993F00643B2F4E40040A2D47482"
+  },
+  {
+    "path": "C:\\SKYKEEPERS\\blender_roblox_pipeline_test_20261109\\SkyHeart.fbx",
+    "unchanged": true,
+    "sha256": "9505CEC881E866A8061DB46C896639263658A2C4DEAAAFD4706B9411C98F1563"
+  },
+  {
+    "path": "C:\\SKYKEEPERS\\blender_roblox_pipeline_test_20261109\\SKYKEEPERS_STAGE_02.rbxl",
+    "unchanged": true,
+    "sha256": "BC3BA145C0F131F3FBA24847818D40213C512B2B5DA776F4DBA955F4CA140361"
+  },
+  {
+    "path": "C:/SKYKEEPERS/SKYKEEPERS_ASSET_PIPELINE/SKYKEEPERS_STAGE_03.rbxl",
+    "bytes": 119054,
+    "sha256": "796FBE5ACEE449E180A4FF66BA49108AAC01B42F65641C96BC701A2CC5B73E75"
+  }
+]

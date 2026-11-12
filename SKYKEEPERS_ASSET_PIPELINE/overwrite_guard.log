@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "C:\SKYKEEPERS\SKYKEEPERS_ASSET_PIPELINE\build_assets.py", line 31, in <module>
+    root=Path(args.out);root.mkdir(parents=True,exist_ok=False)
+                        ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files (x86)\Steam\steamapps\common\Blender\5.3\python\Lib\pathlib\_local.py", line 722, in mkdir
+    os.mkdir(self, mode)
+    ~~~~~~~~^^^^^^^^^^^^
+FileExistsError: [WinError 183] Невозможно создать файл, так как он уже существует: 'C:\\SKYKEEPERS\\SKYKEEPERS_ASSET_PIPELINE\\runs\\stage03_002'
+
+Error: script failed, file: 'C:\SKYKEEPERS\SKYKEEPERS_ASSET_PIPELINE\build_assets.py', exiting.
+Blender 5.3.0 (hash 02f0899d78e3 built 2026-11-10 01:33:43)
+
+Blender quit

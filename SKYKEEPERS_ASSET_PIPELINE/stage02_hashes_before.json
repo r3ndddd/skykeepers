@@ -1,0 +1,17 @@
+[
+  {
+    "Algorithm": "SHA256",
+    "Hash": "CB5232A0940F77D807755E7336DD42E283950993F00643B2F4E40040A2D47482",
+    "Path": "C:\\SKYKEEPERS\\blender_roblox_pipeline_test_20261109\\SkyHeart.blend"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "9505CEC881E866A8061DB46C896639263658A2C4DEAAAFD4706B9411C98F1563",
+    "Path": "C:\\SKYKEEPERS\\blender_roblox_pipeline_test_20261109\\SkyHeart.fbx"
+  },
+  {
+    "Algorithm": "SHA256",
+    "Hash": "BC3BA145C0F131F3FBA24847818D40213C512B2B5DA776F4DBA955F4CA140361",
+    "Path": "C:\\SKYKEEPERS\\blender_roblox_pipeline_test_20261109\\SKYKEEPERS_STAGE_02.rbxl"
+  }
+]

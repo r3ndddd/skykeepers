@@ -1,0 +1,9 @@
+00:00.454  blend            | Read blend: "C:\SKYKEEPERS\SKYKEEPERS_ASSET_PIPELINE\runs\stage03_002\cloudwood_tree_v001\cloudwood_tree_v001.blend"
+00:02.235  render           | Saved: 'C:\SKYKEEPERS\SKYKEEPERS_ASSET_PIPELINE\runs\stage03_002\cloudwood_tree_v001\cloudwood_tree_v001.png'
+00:02.235  blend            | Read blend: "C:\SKYKEEPERS\SKYKEEPERS_ASSET_PIPELINE\runs\stage03_002\skyglass_crystal_v001\skyglass_crystal_v001.blend"
+00:03.532  render           | Saved: 'C:\SKYKEEPERS\SKYKEEPERS_ASSET_PIPELINE\runs\stage03_002\skyglass_crystal_v001\skyglass_crystal_v001.png'
+00:03.532  blend            | Read blend: "C:\SKYKEEPERS\SKYKEEPERS_ASSET_PIPELINE\runs\stage03_002\starbloom_plant_v001\starbloom_plant_v001.blend"
+00:04.875  render           | Saved: 'C:\SKYKEEPERS\SKYKEEPERS_ASSET_PIPELINE\runs\stage03_002\starbloom_plant_v001\starbloom_plant_v001.png'
+Blender 5.3.0 (hash 02f0899d78e3 built 2026-11-10 01:33:43)
+
+Blender quit

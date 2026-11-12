@@ -1,0 +1,54 @@
+{
+  "timestamp": "2026-11-11T20:40:40.357Z",
+  "placeId": "129579887029782",
+  "universeId": "10775590030",
+  "status": "INCOMPLETE_PENDING_LOCAL_SAVE_AND_REOPEN",
+  "assets": [
+    {
+      "key": "cloudwood_tree_v001",
+      "assetId": "129813967036033",
+      "operationId": "9e02fbf6-1a76-4a6d-81e3-ce286790fa31"
+    },
+    {
+      "key": "skyglass_crystal_v001",
+      "assetId": "94280629574858",
+      "operationId": "bb785351-d24b-4d6d-89f7-80280a07a094"
+    },
+    {
+      "key": "starbloom_plant_v001",
+      "assetId": "84677648855773",
+      "operationId": "6e8d0f17-f316-41c2-a698-c7c2d7788983"
+    }
+  ],
+  "edit": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"skyglass_crystal_v001\":{\"meshes\":3,\"pivot\":\"-5, 43, 5, 1, 0, 0, 0, 1, 0, 0, 0, 1\",\"size\":\"2.000000238418579, 2.9999985694885254, 2.000000238418579\"},\"starbloom_plant_v001\":{\"meshes\":9,\"pivot\":\"2, 43, 5, 1, 0, 0, 0, 1, 0, 0, 0, 1\",\"size\":\"2, 2, 2\"},\"cloudwood_tree_v001\":{\"meshes\":4,\"pivot\":\"-12, 43, 5, 1, 0, 0, 0, 1, 0, 0, 0, 1\",\"size\":\"4.999759674072266, 7.9996161460876465, 5.000000476837158\"}}"
+      }
+    ],
+    "isError": false
+  },
+  "play": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"skyglass_crystal_v001\":{\"meshes\":3,\"pivot\":\"-5, 43, 5, 1, 0, 0, 0, 1, 0, 0, 0, 1\",\"size\":\"2, 2.9999985694885254, 2\"},\"starbloom_plant_v001\":{\"meshes\":9,\"pivot\":\"2, 43, 5, 1, 0, 0, 0, 1, 0, 0, 0, 1\",\"size\":\"1.9999998807907104, 2, 2\"},\"cloudwood_tree_v001\":{\"meshes\":4,\"pivot\":\"-12, 43, 5, 1, 0, 0, 0, 1, 0, 0, 0, 1\",\"size\":\"4.999759674072266, 7.9996161460876465, 5\"}}"
+      }
+    ],
+    "isError": false
+  },
+  "skyHeart": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"meshes\":{\"1\":{\"name\":\"Crystal_Northwest\",\"color\":\"0.168627, 0.721569, 0.929412\",\"anchored\":true,\"meshId\":\"rbxassetid://124484444370172\",\"size\":\"0.7237335443496704, 1.6002801656723022, 0.7609784603118896\"},\"3\":{\"name\":\"Pedestal_Base\",\"color\":\"0.337255, 0.407843, 0.494118\",\"anchored\":true,\"meshId\":\"rbxassetid://116390521517404\",\"size\":\"6.00105094909668, 0.900157630443573, 6.00105094909668\"},\"2\":{\"name\":\"Pedestal_Crown\",\"color\":\"0.533333, 0.615686, 0.678431\",\"anchored\":true,\"meshId\":\"rbxassetid://91622090746809\",\"size\":\"5.200910568237305, 0.500087559223175, 5.200910568237305\"},\"5\":{\"name\":\"Crystal_East\",\"color\":\"0.168627, 0.721569, 0.929412\",\"anchored\":true,\"meshId\":\"rbxassetid://137923056297670\",\"size\":\"0.8684803247451782, 2.200385570526123, 0.9131742119789124\"},\"4\":{\"name\":\"Crystal_Southwest\",\"color\":\"0.168627, 0.721569, 0.929412\",\"anchored\":true,\"meshId\":\"rbxassetid://92634514483658\",\"size\":\"0.7961069941520691, 1.9003325700759888, 0.8370763659477234\"},\"6\":{\"name\":\"SkyHeart_Main\",\"color\":\"0.168627, 0.721569, 0.929412\",\"anchored\":true,\"meshId\":\"rbxassetid://118614285562032\",\"size\":\"2.252060651779175, 7.6013312339782715, 2.6004552841186523\"}},\"pivot\":\"12, 43, -4, 1, 0, 0, 0, 1, 0, 0, 0, 1\",\"attributes\":{\"SourceTriangleCount\":244,\"PipelineAssetId\":\"72262853317816\"}}"
+      }
+    ],
+    "isError": false
+  },
+  "saveCopy": "NOT_COMPLETED",
+  "reopen": "NOT_RUN",
+  "uiError": "failed to activate captured window",
+  "consoleWarning": "ContentId: rbxassetid://203785492 failed due to: Asset type does not match requested type"
+}

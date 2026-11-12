@@ -1,0 +1,24 @@
+./src/tests/ResourceMath.luau(18,25): TypeError: Types '~nil' and 'number' cannot be compared with relational operator <
+./src/tests/ResourceMath.luau(18,36): TypeError: Operator '%' could not be applied to operands of types ~nil and number; there is no corresponding overload for __mod
+./src/tests/ResourceMath.luau(22,31): TypeError: Expected this to be 'number', but got '~nil'; 
+`~nil` cannot be `number`
+./src/tests/ResourceMath.luau(26,17): TypeError: Type 'table' does not have key 'probability'
+./src/tests/ResourceMath.luau(26,37): TypeError: Type 'table' does not have key 'probability'
+./src/tests/ResourceMath.luau(26,37): TypeError: Types 'unknown' and 'number' cannot be compared with relational operator <
+./src/tests/ResourceMath.luau(29,17): TypeError: Type 'table' does not have key 'price'
+./src/tests/ResourceMath.luau(29,31): TypeError: Type 'table' does not have key 'price'
+./src/tests/ResourceMath.luau(29,31): TypeError: Types 'unknown' and 'number' cannot be compared with relational operator <
+./src/tests/ResourceMath.luau(32,12): TypeError: Type 'table' does not have key 'probability'
+./src/tests/ResourceMath.luau(32,3): TypeError: Operator '+' could not be applied to operands of types number and unknown; there is no corresponding overload for __add
+C:/SKYKEEPERS/SKYKEEPERS_LUAU_PIPELINE/src/tests/ResourceMath.luau(18,25): TypeError: Types '~nil' and 'number' cannot be compared with relational operator <
+C:/SKYKEEPERS/SKYKEEPERS_LUAU_PIPELINE/src/tests/ResourceMath.luau(18,36): TypeError: Operator '%' could not be applied to operands of types ~nil and number; there is no corresponding overload for __mod
+C:/SKYKEEPERS/SKYKEEPERS_LUAU_PIPELINE/src/tests/ResourceMath.luau(22,31): TypeError: Expected this to be 'number', but got '~nil'; 
+`~nil` cannot be `number`
+C:/SKYKEEPERS/SKYKEEPERS_LUAU_PIPELINE/src/tests/ResourceMath.luau(26,17): TypeError: Type 'table' does not have key 'probability'
+C:/SKYKEEPERS/SKYKEEPERS_LUAU_PIPELINE/src/tests/ResourceMath.luau(26,37): TypeError: Type 'table' does not have key 'probability'
+C:/SKYKEEPERS/SKYKEEPERS_LUAU_PIPELINE/src/tests/ResourceMath.luau(26,37): TypeError: Types 'unknown' and 'number' cannot be compared with relational operator <
+C:/SKYKEEPERS/SKYKEEPERS_LUAU_PIPELINE/src/tests/ResourceMath.luau(29,17): TypeError: Type 'table' does not have key 'price'
+C:/SKYKEEPERS/SKYKEEPERS_LUAU_PIPELINE/src/tests/ResourceMath.luau(29,31): TypeError: Type 'table' does not have key 'price'
+C:/SKYKEEPERS/SKYKEEPERS_LUAU_PIPELINE/src/tests/ResourceMath.luau(29,31): TypeError: Types 'unknown' and 'number' cannot be compared with relational operator <
+C:/SKYKEEPERS/SKYKEEPERS_LUAU_PIPELINE/src/tests/ResourceMath.luau(32,12): TypeError: Type 'table' does not have key 'probability'
+C:/SKYKEEPERS/SKYKEEPERS_LUAU_PIPELINE/src/tests/ResourceMath.luau(32,3): TypeError: Operator '+' could not be applied to operands of types number and unknown; there is no corresponding overload for __add

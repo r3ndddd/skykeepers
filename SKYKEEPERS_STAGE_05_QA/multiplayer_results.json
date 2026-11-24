@@ -1,0 +1,32 @@
+[
+  {
+    "status": "fulfilled",
+    "value": {
+      "id": "2c4a7024-b092-424f-8e18-f807f5479142",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"1\":{\"value\":18,\"status\":\"ok\",\"userId\":-1,\"id\":\"qa-valid\"},\"8\":{\"id\":\"qa-fast-b\",\"status\":\"rate_limited\"},\"3\":{\"id\":\"\",\"status\":\"invalid_type\"},\"2\":{\"id\":\"\",\"status\":\"invalid_id\"},\"5\":{\"value\":10,\"status\":\"ok\",\"userId\":-1,\"id\":\"qa-dup\"},\"4\":{\"id\":\"qa-nan\",\"status\":\"invalid_value\"},\"7\":{\"value\":2,\"status\":\"ok\",\"userId\":-1,\"id\":\"qa-fast-a\"},\"6\":{\"id\":\"qa-dup\",\"status\":\"duplicate\"}}"
+          }
+        ],
+        "isError": false
+      }
+    }
+  },
+  {
+    "status": "fulfilled",
+    "value": {
+      "id": "8bf46c74-124f-4df3-94c3-176d61a100eb",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"1\":{\"value\":18,\"status\":\"ok\",\"userId\":-2,\"id\":\"qa-valid\"},\"8\":{\"id\":\"qa-fast-b\",\"status\":\"rate_limited\"},\"3\":{\"id\":\"\",\"status\":\"invalid_type\"},\"2\":{\"id\":\"\",\"status\":\"invalid_id\"},\"5\":{\"value\":10,\"status\":\"ok\",\"userId\":-2,\"id\":\"qa-dup\"},\"4\":{\"id\":\"qa-nan\",\"status\":\"invalid_value\"},\"7\":{\"value\":2,\"status\":\"ok\",\"userId\":-2,\"id\":\"qa-fast-a\"},\"6\":{\"id\":\"qa-dup\",\"status\":\"duplicate\"}}"
+          }
+        ],
+        "isError": false
+      }
+    }
+  }
+]

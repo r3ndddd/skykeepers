@@ -1,0 +1,33 @@
+PASS WhisperingMeadows contributions, sum, route
+PASS StormTemple contributions, sum, route
+PASS CrystalRuins contributions, sum, route
+PASS nine resources and five unassigned rarity tiers
+PASS inventory accepts each approved resource independently
+PASS CDF boundary and random validation
+PASS unknown zone
+PASS empty table
+PASS probability totals below and above 1
+PASS negative probability
+PASS wrong types, NaN and Infinity
+PASS unknown resource and hole
+PASS concurrent claims: one award
+PASS replay and cooldown
+PASS distance and nonexistent node
+PASS removed node and player disconnect
+PASS invalid zone registration
+PASS inventory invalid ids amounts and overflow
+PASS player isolation and fresh reconnect
+PASS NaN Infinity and wrong argument types
+SIM WhisperingMeadows Cloudwood n=100000 count=70038 observed=0.70038 expected=0.70000 tolerance=0.00600
+SIM WhisperingMeadows Skyglass n=100000 count=25051 observed=0.25051 expected=0.25000 tolerance=0.00600
+SIM WhisperingMeadows Starbloom n=100000 count=4911 observed=0.04911 expected=0.05000 tolerance=0.00600
+PASS simulation WhisperingMeadows
+SIM StormTemple StormEssence n=100000 count=59938 observed=0.59938 expected=0.60000 tolerance=0.00600
+SIM StormTemple CelestialOre n=100000 count=38113 observed=0.38113 expected=0.38000 tolerance=0.00600
+SIM StormTemple TempestCore n=100000 count=1949 observed=0.01949 expected=0.02000 tolerance=0.00600
+PASS simulation StormTemple
+SIM CrystalRuins Mistwood n=100000 count=54929 observed=0.54929 expected=0.55000 tolerance=0.00600
+SIM CrystalRuins Moonstone n=100000 count=40160 observed=0.40160 expected=0.40000 tolerance=0.00600
+SIM CrystalRuins AncientBark n=100000 count=4911 observed=0.04911 expected=0.05000 tolerance=0.00600
+PASS simulation CrystalRuins
+TOTAL 23 PASS 23 FAIL 0

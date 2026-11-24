@@ -1,0 +1,13 @@
+{
+  "method": "User clicked Sell One in the Cloudwood row in the iPhone 13 Studio Device Simulator; server attribute observers and client GUI queried",
+  "baseline": {"Cloudwood": 1, "SkyCoins": 42},
+  "server_events": [
+    {"attribute": "SK07_Cloudwood", "after": {"Cloudwood": 0, "SkyCoins": 47}},
+    {"attribute": "SK08_SkyCoins", "after": {"Cloudwood": 0, "SkyCoins": 47}}
+  ],
+  "final_server": {"Cloudwood": 0, "SkyCoins": 47},
+  "client": {"touchEnabled": true, "hud": "Sky Coins: 47", "merchant_balance": "Sky Coins: 47", "resource_row": "Cloudwood ×0; 5 SC each", "message": "Sold 1 for 5 SC."},
+  "ui": {"nominal_profile": "iPhone 13 390x844", "camera_viewport": "389x762", "panel_size": "365x563.2", "sell_button_size": "54x46", "display_order": 10},
+  "physical_device": false,
+  "scope": "Click occurred before the later UI-only live-inventory-refresh addition; server economy logic remained unchanged."
+}

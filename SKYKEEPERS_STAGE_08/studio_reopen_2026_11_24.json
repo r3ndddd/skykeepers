@@ -1,0 +1,7 @@
+{
+  "place":"SKYKEEPERS_STAGE_08.rbxl",
+  "edit":{"merchant":true,"skyHeart":true,"cottage":true,"treeCount":3,"economyModule":true,"requestIdGuardPresent":true},
+  "single_client":{"method":"Prompt API and RemoteEvent","before":{"Cloudwood":0,"SkyCoins":0},"gather":{"Cloudwood":1},"merchant":{"open":true,"row":"Cloudwood ×1; 5 SC each"},"after":{"Cloudwood":0,"SkyCoins":5,"hud":"Sky Coins: 5","message":"Sold 1 for 5 SC."}},
+  "economy_module_tests":{"total":22,"pass":22,"fail":0},
+  "physical_touch":false
+}

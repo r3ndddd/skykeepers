@@ -1,0 +1,12 @@
+{
+  "method": "Studio Play; server positioned character; client used ProximityPrompt InputHoldBegin/End; read replicated attributes and HUD",
+  "initial": {"Cloudwood": 0, "Skyglass": 0, "Starbloom": 0},
+  "observations": [
+    {"node": "Cloudwood_01", "nodeAvailableAfter": false, "Cloudwood": 0, "Skyglass": 1, "Starbloom": 0, "hud": "Skyglass: 1"},
+    {"node": "Skyglass_Decor", "nodeAvailableAfter": false, "Cloudwood": 1, "Skyglass": 1, "Starbloom": 0, "hud": "Cloudwood: 1"},
+    {"node": "Starbloom_Decor", "nodeAvailableAfter": false, "Cloudwood": 1, "Skyglass": 1, "Starbloom": 1, "hud": "Starbloom: 1"},
+    {"node": "Cloudwood_02", "nodeAvailableAfter": false, "Cloudwood": 1, "Skyglass": 2, "Starbloom": 1, "hud": "Skyglass: 2"},
+    {"node": "Cloudwood_03", "nodeAvailableAfter": false, "Cloudwood": 2, "Skyglass": 2, "Starbloom": 1, "hud": "Cloudwood: 2"}
+  ],
+  "note": "These client Prompt API calls are programmatic; they are not physical touch events."
+}

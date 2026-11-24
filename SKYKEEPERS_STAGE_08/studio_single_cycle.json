@@ -1,0 +1,8 @@
+{
+  "method": "Studio Play: character positioned at resource and merchant; resource and merchant ProximityPrompt invoked via InputHoldBegin/End; SellOne clicked using Studio mouse input",
+  "gather": {"Cloudwood": 1, "Skyglass": 0, "Starbloom": 0, "SkyCoins": 0, "hud": "Cloudwood: 1"},
+  "merchant_before": {"row": "Cloudwood ×1; 5 SC each", "coins": 0},
+  "merchant_after": {"Cloudwood": 0, "SkyCoins": 5, "message": "Sold 1 for 5 SC.", "merchant_balance": "Sky Coins: 5", "hud": "Sky Coins: 5"},
+  "server_attributes_after": {"Cloudwood": 0, "SkyCoins": 5},
+  "scope": "GUI click through Studio input; not a physical touchscreen."
+}

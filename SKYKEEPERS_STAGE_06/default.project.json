@@ -1,0 +1,11 @@
+{
+  "name": "SKYKEEPERS_STAGE_06_ONLY",
+  "serveAddress": "127.0.0.1",
+  "servePort": 34876,
+  "tree": {
+    "$className": "DataModel",
+    "$ignoreUnknownInstances": true,
+    "ServerScriptService": {"$className":"ServerScriptService", "$ignoreUnknownInstances":true, "SK_Stage06": {"$path":"src/server", "$ignoreUnknownInstances":true}},
+    "StarterPlayer": {"$className":"StarterPlayer", "$ignoreUnknownInstances":true, "StarterPlayerScripts": {"$className":"StarterPlayerScripts", "$ignoreUnknownInstances":true, "SK_Stage06": {"$path":"src/client", "$ignoreUnknownInstances":true}}}
+  }
+}

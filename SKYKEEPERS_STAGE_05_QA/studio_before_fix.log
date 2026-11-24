@@ -1,0 +1,58 @@
+[STAGE05][FAIL] probe 7+3 expected 10, got 4
+[STAGE04][PASS] Whispering Meadows contribution 1
+[STAGE04][PASS] Whispering Meadows contribution 2
+[STAGE04][PASS] Whispering Meadows contribution 3
+[STAGE04][PASS] Whispering Meadows probability sum
+[STAGE04][PASS] Whispering Meadows independent expectation
+[STAGE04][PASS] Whispering Meadows route
+[STAGE04][PASS] Crystal Ruins contribution 1
+[STAGE04][PASS] Crystal Ruins contribution 2
+[STAGE04][PASS] Crystal Ruins contribution 3
+[STAGE04][PASS] Crystal Ruins probability sum
+[STAGE04][PASS] Crystal Ruins independent expectation
+[STAGE04][PASS] Crystal Ruins route
+[STAGE04][PASS] Storm Temple contribution 1
+[STAGE04][PASS] Storm Temple contribution 2
+[STAGE04][PASS] Storm Temple contribution 3
+[STAGE04][PASS] Storm Temple probability sum
+[STAGE04][PASS] Storm Temple independent expectation
+[STAGE04][PASS] Storm Temple route
+[STAGE04][PASS] empty drops
+[STAGE04][PASS] sum above one
+[STAGE04][PASS] sum below one
+[STAGE04][PASS] negative price
+[STAGE04][PASS] negative probability
+[STAGE04][PASS] wrong container type
+[STAGE04][PASS] wrong row type
+[STAGE04][PASS] wrong probability type
+[STAGE04][PASS] wrong price type
+[STAGE04][PASS] missing probability
+[STAGE04][PASS] missing price
+[STAGE04][PASS] NaN probability
+[STAGE04][PASS] NaN price
+[STAGE04][PASS] infinite probability
+[STAGE04][PASS] infinite price
+[STAGE04][PASS] negative infinity
+[STAGE04][PASS] sparse array
+[STAGE04][PASS] dictionary keys
+[STAGE04][PASS] outside tolerance
+[STAGE04][PASS] nil drops
+[STAGE04][PASS] inside tolerance
+[STAGE04][PASS] zero price and probability
+[STAGE04][PASS] zero gathers
+[STAGE04][PASS] invalid count -1
+[STAGE04][PASS] invalid count 0.5
+[STAGE04][PASS] invalid count inf
+[STAGE04][PASS] invalid count nan
+[STAGE04][PASS] invalid count 9
+[STAGE04][PASS] invalid expectation -1
+[STAGE04][PASS] invalid expectation inf
+[STAGE04][PASS] invalid expectation nan
+[STAGE04][PASS] invalid expectation 8
+[STAGE04][PASS] route overflow
+[STAGE04][SUMMARY] 51 run, 51 passed, 0 failed
+SKYKEEPERS prototype ready: session-only data; no purchases or persistent writes
+[STAGE05][CLIENT] user=85536548 id=85536548-initial status=ok value=14 owner=85536548
+ContentId: rbxassetid://203785492 failed due to: Asset type does not match requested type
+ContentId: rbxassetid://203785492 failed due to: Asset type does not match requested type
+ContentId: rbxassetid://203785492 failed due to: Asset type does not match requested type

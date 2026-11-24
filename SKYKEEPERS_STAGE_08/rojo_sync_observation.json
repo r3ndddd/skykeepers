@@ -1,0 +1,10 @@
+{
+  "cli_path":"C:\\Users\\razaw\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Rojo.Rojo_Microsoft.Winget.Source_8wekyb3d8bbwe\\rojo.exe",
+  "version":"Rojo 7.7.1",
+  "build":"Built SKYKEEPERS_STAGE_08_ONLY to stage08_mapping.rbxlx; exit code 0",
+  "server":"localhost:34878",
+  "plugin":"Rojo 7.7.1; connected and initial sync accepted in local Stage08 copy",
+  "filesystem_to_studio_test": {"file":"src/server/EconomyCore.luau","temporary_marker":"-- SK08_ROJO_SYNC_PROBE_1120","added_seen_in_studio":true,"removed_absent_in_studio":true},
+  "after_sync": {"merchant_exists":true,"sky_heart_exists":true,"previous_stage06_resource_service_disabled":true,"saved_to":"C:/SKYKEEPERS/SKYKEEPERS_STAGE_08/SKYKEEPERS_STAGE_08.rbxl"},
+  "note":"Marker was removed; only the test copy was synchronized."
+}

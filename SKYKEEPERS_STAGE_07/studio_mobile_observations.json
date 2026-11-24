@@ -1,0 +1,9 @@
+{
+  "device": "iPhone 13 portrait, Device Simulator FitToWindow",
+  "observed_camera_viewport": "389x762",
+  "before_fix": {"panel_width": 260, "observation": "player list overlapped right side of HUD"},
+  "after_fix": {"panel_position": "16,16", "panel_size": "190x86", "counter_size": "174x32", "counter_text": "Cloudwood: 1", "counter_text_bounds": "92x16", "observation": "shown HUD no longer overlapped player list"},
+  "touch_attempt": {"method": "mouse down/wait/up targeted at ProximityPrompts.Prompt.TextButton", "result": "server inventory remained zero", "status": "BLOCKED"},
+  "programmatic_prompt_control": {"method": "InputHoldBegin/End", "result": "Cloudwood 0 to 1; HUD Cloudwood: 1", "is_real_touch": false},
+  "warning": "World appeared white in this emulator observation; cause not established."
+}

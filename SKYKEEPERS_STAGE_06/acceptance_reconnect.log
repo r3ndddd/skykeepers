@@ -1,0 +1,6 @@
+Studio Server lifecycle observation, test server Player2:
+before: {sessions:2,id:-2,balance:2}
+after: {sessions:1,present:false}, Player1 balance:1
+Studio Test > Add Clients on the same server:
+{players:[{id:-1,name:Player1,balance:1},{id:-3,name:Player3,balance:0},{id:-4,name:Player4,balance:0}],sessions:3}
+The removed identity -2 was not reconnected.

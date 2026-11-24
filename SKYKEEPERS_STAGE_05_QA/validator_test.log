@@ -1,0 +1,13 @@
+[PASS] valid expected=true/ok actual=true/ok
+[PASS] empty expected=false/invalid_id actual=false/invalid_id
+[PASS] wrong type expected=false/invalid_type actual=false/invalid_type
+[PASS] missing value expected=false/invalid_value actual=false/invalid_value
+[PASS] wrong kind expected=false/invalid_kind actual=false/invalid_kind
+[PASS] NaN expected=false/invalid_value actual=false/invalid_value
+[PASS] infinity expected=false/invalid_value actual=false/invalid_value
+[PASS] negative expected=false/invalid_value actual=false/invalid_value
+[PASS] too large expected=false/invalid_value actual=false/invalid_value
+[PASS] fractional expected=false/invalid_value actual=false/invalid_value
+[PASS] long id expected=false/invalid_id actual=false/invalid_id
+[PASS] extra field expected=false/invalid_fields actual=false/invalid_fields
+[SUMMARY] 12 tests, 12 passed, 0 failed

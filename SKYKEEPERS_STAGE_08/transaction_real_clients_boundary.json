@@ -1,0 +1,11 @@
+{
+  "date":"2026-11-24",
+  "scope":"Separate runtime-only test RemoteEvent and separate inventory; real Studio Player1 and Player2; real EconomyCore; production merchant and session inventory not modified.",
+  "before":{"Player1":{"Cloudwood":1,"SkyCoins":0},"Player2":{"Cloudwood":1,"SkyCoins":0}},
+  "paused":"Harness preflight passed; handler waited before calling EconomyCore:sell. This is not a pause inside production validation or commit.",
+  "disconnect":"Player1 invoked StudioTestService:LeaveTest; harness PlayerRemoving deleted Player1 test session.",
+  "resumed_Player1":{"ok":false,"reason":"player","repeatOk":false,"Cloudwood":1,"SkyCoins":0,"sessionAbsent":true},
+  "Player2":{"ok":true,"earned":5,"Cloudwood":0,"SkyCoins":5,"repeatOk":false},
+  "sessionCleared":true,
+  "limitation":"This tests actual client disconnect at an external safe boundary, not interruption inside the non-yielding production critical section. Player2 sold through the isolated harness; a prior separate multiplayer test verified Player2 continued selling through the actual merchant after Player1 left."
+}

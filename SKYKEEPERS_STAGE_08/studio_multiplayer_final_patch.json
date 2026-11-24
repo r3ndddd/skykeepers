@@ -1,0 +1,9 @@
+{
+  "scope": "Real Studio multiplayer clients after final RequestId patch was saved, before final reopen; gather via Prompt API, concurrent sales via RemoteEvent",
+  "before_sales": [{"player":"Player1","Cloudwood":1,"SkyCoins":0},{"player":"Player2","Cloudwood":1,"SkyCoins":0}],
+  "client_results": [
+    {"player":"Player1","time":1795207701.398493,"Cloudwood":0,"SkyCoins":5,"hud":"Sky Coins: 5"},
+    {"player":"Player2","time":1795207701.420353,"Cloudwood":0,"SkyCoins":5,"hud":"Sky Coins: 5"}
+  ],
+  "server_results": [{"player":"Player1","Cloudwood":0,"SkyCoins":5},{"player":"Player2","Cloudwood":0,"SkyCoins":5}]
+}

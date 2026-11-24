@@ -1,0 +1,11 @@
+{
+  "scope": "Studio two-client session on 2026-11-20 after final saved place was reopened; results transcribed from MCP responses before interrupted session",
+  "initial": [{"player":"Player1","Cloudwood":0,"SkyCoins":0},{"player":"Player2","Cloudwood":0,"SkyCoins":0}],
+  "gather": [{"player":"Player1","Cloudwood":1},{"player":"Player2","Cloudwood":1}],
+  "sales": [
+    {"player":"Player1","before":"Cloudwood ×1; 5 SC each","afterCloudwood":0,"afterCoins":5,"hud":"Sky Coins: 5","message":"Sold 1 for 5 SC."},
+    {"player":"Player2","before":"Cloudwood ×1; 5 SC each","afterCloudwood":0,"afterCoins":5,"hud":"Sky Coins: 5","message":"Sold 1 for 5 SC."}
+  ],
+  "exit_race": {"method":"Player1 sent a sale request then immediately invoked LeaveTest", "before":{"Cloudwood":1,"SkyCoins":5},"playerRemovingObservation":{"Cloudwood":0,"SkyCoins":10,"serverTime":1795208219.090472},"remainingPlayer":{"name":"Player2","Cloudwood":1,"SkyCoins":5},"interpretation":"The transaction had completed when PlayerRemoving was observed; this does not prove interruption inside a transaction."},
+  "remaining_player_followup": "Blocked by automatic approval review usage limit; not executed in this session. A separate earlier multiplayer session verified Player2 could sell after Player1 left."
+}

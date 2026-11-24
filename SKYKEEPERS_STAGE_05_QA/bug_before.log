@@ -1,0 +1,4 @@
+./bug_test_before.luau:2: controlled defect: expected 10 for 7 + 3, got 4
+stacktrace:
+[C] function assert
+./bug_test_before.luau:2

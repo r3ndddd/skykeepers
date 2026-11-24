@@ -1,0 +1,4 @@
+PASS A disconnect before transaction
+PASS B test preflight then disconnect before real sell
+PASS C commit then disconnect before harness response
+TOTAL 3 PASS 3 FAIL 0

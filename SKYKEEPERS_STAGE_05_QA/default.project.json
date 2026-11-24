@@ -1,0 +1,28 @@
+{
+  "name": "SKYKEEPERS_STAGE_05_ONLY",
+  "serveAddress": "127.0.0.1",
+  "servePort": 34875,
+  "tree": {
+    "$className": "DataModel",
+    "$ignoreUnknownInstances": true,
+    "ServerStorage": {
+      "$className": "ServerStorage",
+      "$ignoreUnknownInstances": true,
+      "SK_Stage05_Test": { "$path": "qa/modules", "$ignoreUnknownInstances": true }
+    },
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "$ignoreUnknownInstances": true,
+      "SK_Stage05_Test": { "$path": "qa/server", "$ignoreUnknownInstances": true }
+    },
+    "StarterPlayer": {
+      "$className": "StarterPlayer",
+      "$ignoreUnknownInstances": true,
+      "StarterPlayerScripts": {
+        "$className": "StarterPlayerScripts",
+        "$ignoreUnknownInstances": true,
+        "SK_Stage05_Test": { "$path": "qa/client", "$ignoreUnknownInstances": true }
+      }
+    }
+  }
+}

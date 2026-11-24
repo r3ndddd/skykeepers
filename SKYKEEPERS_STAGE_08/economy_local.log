@@ -1,0 +1,23 @@
+PASS one Cloudwood +5
+PASS two Cloudwood +10
+PASS Skyglass +12
+PASS Starbloom +30
+PASS all catalog prices
+PASS insufficient leaves state untouched
+PASS zero negative fractional too large NaN and infinities
+PASS unknown resource
+PASS client price argument is not used by core
+PASS replayed request cannot double sell
+PASS failed request id cannot later be replayed
+PASS sequential claims to last item
+PASS player leaves before operation
+PASS player not live or merchant too far
+PASS sell all actual owned count
+PASS sell all empty
+PASS balance overflow denied atomically
+PASS balance and inventory isolation
+PASS fresh session resets coins and request ids
+PASS invalid ids and request size
+PASS corrupted inventory or balance refused
+PASS replay storage limit does not alter state
+TOTAL 22 PASS 22 FAIL 0

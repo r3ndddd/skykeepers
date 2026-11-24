@@ -1,0 +1,35 @@
+local Inventory=require('../src/server/InventoryService')
+local Resource=require('../src/server/ResourceCore')
+local results={}
+local function test(name, f)
+ local ok,err=pcall(f)
+ table.insert(results,{name=name,pass=ok,error=ok and nil or tostring(err)})
+ print((ok and 'PASS ' or 'FAIL ')..name..(ok and '' or ': '..tostring(err)))
+end
+local function fixture()
+ local inv=Inventory.new(); local a={live=true}; local b={live=true}; local tree={live=true}
+ inv:join(a); inv:join(b)
+ local core=Resource.new(inv,function(p) return p.live end,function(t) return t.live end)
+ core:register(tree)
+ return inv,core,a,b,tree
+end
+test('double_collection',function() local i,c,a,_,t=fixture(); assert(c:gather(a,t,1,1,1,1)); local ok=c:gather(a,t,2,1,1,2); assert(not ok and i:balance(a)==1) end)
+test('two_requests_same_tree',function() local i,c,a,b,t=fixture(); local x=c:gather(a,t,1,1,1,1); local y=c:gather(b,t,1,1,1,1); assert(x and not y and i:balance(a)+i:balance(b)==1) end)
+test('out_of_range',function() local i,c,a,_,t=fixture(); assert(not c:gather(a,t,1,1,12.01,1) and i:balance(a)==0) end)
+test('absent_resource',function() local i,c,a=fixture(); assert(not c:gather(a,nil,1,1,1,1) and i:balance(a)==0) end)
+test('removed_resource',function() local i,c,a,_,t=fixture(); t.live=false; assert(not c:gather(a,t,1,1,1,1) and i:balance(a)==0) end)
+test('during_regrowth',function() local i,c,a,b,t=fixture(); assert(c:gather(a,t,1,1,1,1)); assert(not c:gather(b,t,1,1,1,2) and i:balance(b)==0); assert(c:restore(t)); assert(c:gather(b,t,1,1,1,3) and i:balance(b)==1) end)
+test('missing_player',function() local i,c,a,_,t=fixture(); a.live=false; assert(not c:gather(a,t,1,1,1,1) and i:balance(a)==0) end)
+test('invalid_resource_id',function() local i,c,a=fixture(); assert(not c:gather(a,'invalid',1,1,1,1) and i:balance(a)==0) end)
+test('negative_award',function() local i,c,a,_,t=fixture(); assert(not c:gather(a,t,1,-1,1,1) and i:balance(a)==0) end)
+test('zero_award',function() local i,c,a,_,t=fixture(); assert(not c:gather(a,t,1,0,1,1) and i:balance(a)==0) end)
+test('huge_award',function() local i,c,a,_,t=fixture(); assert(not c:gather(a,t,1,1e100,1,1) and i:balance(a)==0) end)
+test('numeric_overflow',function() local i,c,a,_,t=fixture(); i.sessions[a].Cloudwood=9007199254740991; assert(not c:gather(a,t,1,1,1,1) and i:balance(a)==9007199254740991) end)
+test('reconnect_new_session',function() local i,c,a,_,t=fixture(); assert(c:gather(a,t,1,1,1,1)); i:leave(a); assert(i:balance(a)==nil); assert(i:join(a)); assert(i:balance(a)==0) end)
+test('leave_before_commit',function() local i,c,a,_,t=fixture(); i:leave(a); assert(not c:gather(a,t,1,1,1,1) and i:balance(a)==nil) end)
+test('replay_old_request',function() local i,c,a,_,t=fixture(); assert(c:gather(a,t,7,1,1,1)); assert(c:restore(t)); assert(not c:gather(a,t,7,1,1,2) and i:balance(a)==1) end)
+test('rate_limit',function() local i,c,a,_,t=fixture(); local t2={live=true}; c:register(t2); assert(c:gather(a,t,1,1,1,1)); assert(not c:gather(a,t2,2,1,1,1.1) and i:balance(a)==1) end)
+test('nan_infinity',function() local i,c,a,_,t=fixture(); assert(not c:gather(a,t,1,1,0/0,1)); assert(not c:gather(a,t,1,math.huge,1,1)); assert(not c:gather(a,t,math.huge,1,1,1)); assert(i:balance(a)==0) end)
+local passed=0 for _,r in results do if r.pass then passed+=1 end end
+print('TOTAL '..#results..' PASS '..passed..' FAIL '..(#results-passed))
+assert(passed==#results,'negative tests failed')

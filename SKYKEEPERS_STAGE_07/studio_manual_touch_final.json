@@ -1,0 +1,9 @@
+{
+  "method": "User manually held Gather once in iPhone 13 Device Simulator; server attribute-change observer and separate client query",
+  "baseline": {"Cloudwood": 1, "Skyglass": 0, "Starbloom": 0},
+  "server_events": [{"resource": "Cloudwood", "after": {"Cloudwood": 2, "Skyglass": 0, "Starbloom": 0}}],
+  "final_server": {"Cloudwood": 2, "Skyglass": 0, "Starbloom": 0},
+  "final_client": {"Cloudwood": 2, "Skyglass": 0, "Starbloom": 0, "hud": "Cloudwood: 2", "touchEnabled": true},
+  "physical_device": false,
+  "visual_note": "User stated the island is visible in Studio although the screen-capture tool returned a white 3D region."
+}

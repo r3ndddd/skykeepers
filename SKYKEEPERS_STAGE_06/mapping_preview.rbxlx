@@ -1,0 +1,96 @@
+<roblox version="4">
+  <Item class="ServerScriptService" referent="0">
+    <Properties>
+      <string name="Name">ServerScriptService</string>
+    </Properties>
+    <Item class="Folder" referent="1">
+      <Properties>
+        <string name="Name">SK_Stage06</string>
+      </Properties>
+      <Item class="Script" referent="2">
+        <Properties>
+          <string name="Name">ResourceService</string>
+          <token name="RunContext">0</token>
+          <string name="Source"><![CDATA[local Players = game:GetService('Players')
+local ReplicatedStorage = game:GetService('ReplicatedStorage')
+local island = workspace:WaitForChild('SK_Stage06_Island')
+local remote = Instance.new('RemoteEvent')
+remote.Name = 'SK_Stage06_Notice'
+remote.Parent = ReplicatedStorage
+local inventory = {}
+local last = {}
+local function initialize(p)
+ inventory[p.UserId] = {Cloudwood = 0}
+ p:SetAttribute('SK06_Cloudwood', 0)
+end
+Players.PlayerAdded:Connect(initialize)
+Players.PlayerRemoving:Connect(function(p) inventory[p.UserId] = nil; last[p] = nil end)
+for _,p in Players:GetPlayers() do initialize(p) end
+local function install(tree)
+ local trunk = tree:FindFirstChild('Trunk', true)
+ if not trunk or not trunk:IsA('BasePart') then warn('[SK06] Missing trunk '..tree.Name); return end
+ local prompt = Instance.new('ProximityPrompt')
+ prompt.Name = 'GatherCloudwood'; prompt.ActionText = 'Gather'; prompt.ObjectText = 'Cloudwood'; prompt.KeyboardKeyCode = Enum.KeyCode.E; prompt.MaxActivationDistance = 10; prompt.HoldDuration = 0.35; prompt.RequiresLineOfSight = false; prompt.Parent = trunk
+ tree:SetAttribute('Available', true)
+ prompt.Triggered:Connect(function(p)
+  local now = os.clock()
+  if not p or p.Parent ~= Players or not tree:IsDescendantOf(island) or not trunk:IsDescendantOf(tree) or not inventory[p.UserId] then return end
+  local root = p.Character and p.Character:FindFirstChild('HumanoidRootPart')
+  if not root or (root.Position - trunk.Position).Magnitude > 12 then return end
+  if last[p] and now - last[p] < 0.5 then return end
+  last[p] = now
+  if not tree:GetAttribute('Available') then return end
+  tree:SetAttribute('Available', false); prompt.Enabled = false
+  inventory[p.UserId].Cloudwood += 1
+  p:SetAttribute('SK06_Cloudwood', inventory[p.UserId].Cloudwood)
+  remote:FireClient(p, 'gathered')
+  local original = trunk.Color
+  trunk.Color = Color3.fromRGB(130,135,141)
+  task.delay(15, function()
+   if not tree:IsDescendantOf(island) or not trunk:IsDescendantOf(tree) then return end
+   trunk.Color = original; tree:SetAttribute('Available', true); prompt.Enabled = true
+  end)
+ end)
+end
+for _,tree in island.Resources:GetChildren() do install(tree) end
+print('[SK06] resource service ready')
+]]></string>
+        </Properties>
+      </Item>
+    </Item>
+  </Item>
+  <Item class="StarterPlayer" referent="3">
+    <Properties>
+      <string name="Name">StarterPlayer</string>
+    </Properties>
+    <Item class="StarterPlayerScripts" referent="4">
+      <Properties>
+        <string name="Name">StarterPlayerScripts</string>
+      </Properties>
+      <Item class="Folder" referent="5">
+        <Properties>
+          <string name="Name">SK_Stage06</string>
+        </Properties>
+        <Item class="LocalScript" referent="6">
+          <Properties>
+            <string name="Name">Hud</string>
+            <string name="Source"><![CDATA[local Players = game:GetService('Players')
+local ReplicatedStorage = game:GetService('ReplicatedStorage')
+local player = Players.LocalPlayer
+local gui = Instance.new('ScreenGui'); gui.Name = 'SK06_HUD'; gui.ResetOnSpawn = false; gui.Parent = player:WaitForChild('PlayerGui')
+local panel = Instance.new('Frame'); panel.Size = UDim2.fromOffset(220,74); panel.Position = UDim2.new(0,16,0,16); panel.BackgroundColor3 = Color3.fromRGB(28,42,66); panel.BackgroundTransparency = 0.15; panel.Parent = gui
+local corner=Instance.new('UICorner'); corner.CornerRadius=UDim.new(0,12); corner.Parent=panel
+local title=Instance.new('TextLabel'); title.Size=UDim2.new(1,-16,0,30); title.Position=UDim2.fromOffset(8,4); title.BackgroundTransparency=1; title.Text='SKYKEEPERS'; title.Font=Enum.Font.GothamBold; title.TextSize=20; title.TextColor3=Color3.fromRGB(205,242,255); title.Parent=panel
+local count=Instance.new('TextLabel'); count.Size=UDim2.new(1,-16,0,28); count.Position=UDim2.fromOffset(8,36); count.BackgroundTransparency=1; count.Font=Enum.Font.Gotham; count.TextSize=16; count.TextColor3=Color3.new(1,1,1); count.Parent=panel
+local function update() count.Text='Cloudwood: '..tostring(player:GetAttribute('SK06_Cloudwood') or 0) end
+player:GetAttributeChangedSignal('SK06_Cloudwood'):Connect(update); update()
+local notice=Instance.new('TextLabel'); notice.AnchorPoint=Vector2.new(.5,0); notice.Position=UDim2.new(.5,0,0,100); notice.Size=UDim2.fromOffset(220,38); notice.BackgroundTransparency=.25; notice.BackgroundColor3=Color3.fromRGB(28,70,81); notice.TextColor3=Color3.new(1,1,1); notice.Font=Enum.Font.GothamBold; notice.TextSize=18; notice.Text='+1 Cloudwood'; notice.Visible=false; notice.Parent=gui
+local serial=0
+ReplicatedStorage:WaitForChild('SK_Stage06_Notice').OnClientEvent:Connect(function(kind) if kind ~= 'gathered' then return end serial+=1 local n=serial notice.Visible=true task.delay(2,function() if serial==n then notice.Visible=false end end) end)
+]]></string>
+          </Properties>
+        </Item>
+      </Item>
+    </Item>
+  </Item>
+</roblox>

@@ -1,0 +1,29 @@
+{
+  "date": "2026-11-20",
+  "studio_place": "SKYKEEPERS_STAGE_06.rbxl",
+  "device_simulator": {
+    "method": "Play mode, FitToWindow; screen_capture and live Client DataModel",
+    "profiles": [
+      {"name": "Samsung Galaxy A06 portrait", "nominal": "360x800", "camera_viewport": "359x718", "visible_hud": "Cloudwood: 0"},
+      {"name": "iPhone 13 portrait", "nominal": "390x844", "camera_viewport": "389x762", "visible_hud": "Cloudwood: 0"},
+      {"name": "iPad 6th Generation portrait", "nominal": "768x1024", "camera_viewport": "767x1023", "visible_hud": "Cloudwood: 0"},
+      {"name": "HD 1080", "nominal": "1920x1080", "camera_viewport": "1920x1078", "visible_hud": "Cloudwood: 0"}
+    ],
+    "label_rects": {"title_position": "24,20", "title_size": "204x30", "title_text_bounds": "120x20", "counter_position": "24,52", "counter_size": "204x28", "counter_text_bounds": "96x16"},
+    "screen_orientation": "Sensor",
+    "screen_insets": "CoreUISafeInsets",
+    "ignore_gui_inset": false,
+    "clip_to_device_safe_area": true,
+    "scope": "Screen captures showed the HUD at rest; transient notice, every possible overlay and physical devices were not exhaustively checked. Camera viewport values are observed, not substituted with nominal resolution."
+  },
+  "disconnect_after_gather": {
+    "method": "StudioTestService multiplayer; test client Prompt InputHoldBegin/End; server Kick; SceneAnalysisService server query",
+    "before_gather": {"player": "Player3", "user_id": -3, "tree": "Cloudwood_01", "tree_available": true, "active_sessions": 2},
+    "client_after_gather": {"cloudwood": 1, "tree_available": false},
+    "server_immediately_before_kick": {"cloudwood": 1, "tree_available": false, "active_sessions": 2},
+    "server_after_kick": {"remaining_players": [{"name": "Player1", "user_id": -1, "cloudwood": 0}], "tree_available": true, "active_sessions": 1, "unparented_total": 1, "unparented_host": "StarterPlayer.PlayerModule.CommonUtils.PlayerModuleEventBus", "unparented_type": "BindableEvent"},
+    "scope": "No unparented instance was attributed by SceneAnalysisService to the Stage06 scripts in this observation. This is not proof of absence of all memory leaks or references."
+  },
+  "same_identity_reconnect": {"removed": "Player2, UserId -2", "add_players_result": "Player3, UserId -3", "status": "BLOCKED"},
+  "warnings": ["ContentId 203785492: Asset type does not match requested type; UNRESOLVED", "During this Studio session Output also reported HttpError: Timedout for several mesh and animation asset fetches; cause and impact not established."]
+}

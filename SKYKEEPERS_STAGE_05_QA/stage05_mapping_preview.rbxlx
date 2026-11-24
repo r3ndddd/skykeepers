@@ -1,0 +1,137 @@
+<roblox version="4">
+  <Item class="ServerScriptService" referent="0">
+    <Properties>
+      <string name="Name">ServerScriptService</string>
+    </Properties>
+    <Item class="Folder" referent="1">
+      <Properties>
+        <string name="Name">SK_Stage05_Test</string>
+      </Properties>
+      <Item class="Script" referent="2">
+        <Properties>
+          <string name="Name">ProbeRunner</string>
+          <token name="RunContext">0</token>
+          <string name="Source"><![CDATA[local probe = require(game.ServerStorage.SK_Stage05_Test.Probe)
+local actual = probe(7, 3)
+if actual == 10 then
+	print('[STAGE05][PASS] probe 7+3 = 10')
+else
+	warn(('[STAGE05][FAIL] probe 7+3 expected 10, got %s'):format(actual))
+end
+script:SetAttribute('Actual', actual)
+script:SetAttribute('Passed', actual == 10)
+script:SetAttribute('Completed', true)
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="Script" referent="3">
+        <Properties>
+          <string name="Name">RemoteServer</string>
+          <token name="RunContext">0</token>
+          <string name="Source"><![CDATA[local Players = game:GetService('Players')
+local ReplicatedStorage = game:GetService('ReplicatedStorage')
+local validate = require(game.ServerStorage.SK_Stage05_Test.RequestValidator)
+local folder = Instance.new('Folder')
+folder.Name = 'SK_Stage05_Remote_Test'
+folder.Parent = ReplicatedStorage
+local remote = Instance.new('RemoteEvent')
+remote.Name = 'Exchange'
+remote.Parent = folder
+local state = {}
+Players.PlayerRemoving:Connect(function(player) state[player] = nil end)
+remote.OnServerEvent:Connect(function(player, data)
+	local now = os.clock()
+	local s = state[player] or {last = -math.huge, ids = {}, count = 0}
+	state[player] = s
+	local valid, reason = validate(data)
+	local id = if type(data) == 'table' and type(data.id) == 'string' and #data.id <= 32 then data.id else ''
+	if now - s.last < 0.15 then
+		remote:FireClient(player, {id = id, status = 'rate_limited'})
+		return
+	end
+	s.last = now
+	if not valid then remote:FireClient(player, {id = id, status = reason}); return end
+	if s.ids[id] then remote:FireClient(player, {id = id, status = 'duplicate'}); return end
+	if s.count >= 64 then remote:FireClient(player, {id = id, status = 'quota'}); return end
+	s.ids[id] = true
+	s.count += 1
+	remote:FireClient(player, {id = id, status = 'ok', value = data.value * 2, userId = player.UserId})
+end)
+]]></string>
+        </Properties>
+      </Item>
+    </Item>
+  </Item>
+  <Item class="ServerStorage" referent="4">
+    <Properties>
+      <string name="Name">ServerStorage</string>
+    </Properties>
+    <Item class="Folder" referent="5">
+      <Properties>
+        <string name="Name">SK_Stage05_Test</string>
+      </Properties>
+      <Item class="ModuleScript" referent="6">
+        <Properties>
+          <string name="Name">Probe</string>
+          <string name="Source"><![CDATA[--!strict
+-- Intentional controlled defect for Stage 0.5. Kept separate from ResourceMath.
+return function(a: number, b: number): number
+	return a - b
+end
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="7">
+        <Properties>
+          <string name="Name">RequestValidator</string>
+          <string name="Source"><![CDATA[--!strict
+-- Pure server-side validation. This module never trusts client identity or timing.
+local function finite(n: any): boolean
+	return type(n) == 'number' and n == n and math.abs(n) < math.huge
+end
+return function(data: any): (boolean, string)
+	if type(data) ~= 'table' then return false, 'invalid_type' end
+	local fields = 0
+	for key in pairs(data) do
+		fields += 1
+		if fields > 3 or (key ~= 'id' and key ~= 'kind' and key ~= 'value') then return false, 'invalid_fields' end
+	end
+	if type(data.id) ~= 'string' or #data.id < 1 or #data.id > 32 then return false, 'invalid_id' end
+	if data.kind ~= 'probe' then return false, 'invalid_kind' end
+	if not finite(data.value) or data.value < 0 or data.value > 100 or data.value % 1 ~= 0 then return false, 'invalid_value' end
+	return true, 'ok'
+end
+]]></string>
+        </Properties>
+      </Item>
+    </Item>
+  </Item>
+  <Item class="StarterPlayer" referent="8">
+    <Properties>
+      <string name="Name">StarterPlayer</string>
+    </Properties>
+    <Item class="StarterPlayerScripts" referent="9">
+      <Properties>
+        <string name="Name">StarterPlayerScripts</string>
+      </Properties>
+      <Item class="Folder" referent="10">
+        <Properties>
+          <string name="Name">SK_Stage05_Test</string>
+        </Properties>
+        <Item class="LocalScript" referent="11">
+          <Properties>
+            <string name="Name">RemoteClient</string>
+            <string name="Source"><![CDATA[local Players = game:GetService('Players')
+local remote = game:GetService('ReplicatedStorage'):WaitForChild('SK_Stage05_Remote_Test'):WaitForChild('Exchange')
+local id = tostring(Players.LocalPlayer.UserId) .. '-initial'
+remote.OnClientEvent:Connect(function(reply)
+	print(('[STAGE05][CLIENT] user=%s id=%s status=%s value=%s owner=%s'):format(Players.LocalPlayer.UserId, tostring(reply.id), tostring(reply.status), tostring(reply.value), tostring(reply.userId)))
+end)
+remote:FireServer({id = id, kind = 'probe', value = 7})
+]]></string>
+          </Properties>
+        </Item>
+      </Item>
+    </Item>
+  </Item>
+</roblox>

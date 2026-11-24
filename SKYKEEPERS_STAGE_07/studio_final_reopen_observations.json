@@ -1,0 +1,12 @@
+{
+  "place": "SKYKEEPERS_STAGE_07.rbxl",
+  "reopen_method": "User closed and reopened saved local place; new Studio instance was observed",
+  "edit_model": {"saved_hud_width_190": true, "modules": ["DropService", "InventoryService", "ResourceCatalog", "ResourceCore", "ResourceService"], "models": ["SkyHeart", "Cottage", "Skyglass_Decor", "Starbloom_Decor", "Resources"]},
+  "studio_server_tests": {"count": 20, "pass": 20, "fail": 0, "simulations_excluded": true},
+  "before_gather": {"Cloudwood": 0, "Skyglass": 0, "Starbloom": 0, "treeAvailable": true},
+  "after_gather_client": {"Cloudwood": 1, "Skyglass": 0, "Starbloom": 0, "hud": "Cloudwood: 1", "panelSize": "190x86", "treeAvailable": false},
+  "after_gather_server": {"Cloudwood": 1, "Skyglass": 0, "Starbloom": 0, "activeSessions": 1},
+  "gather_method": "Programmatic ProximityPrompt InputHoldBegin/End; not actual touch",
+  "visual_control": "The Studio screen capture showed a white 3D viewport in both Stage07 and a separately run Stage06 session; HUD rendered in both. Cause and whether the visible application itself renders differently are not established.",
+  "stage07_mobile": {"profile": "iPhone 13 portrait", "cameraViewport": "389x762", "hud": "Cloudwood: 1", "textBounds": "92x16", "labelSize": "174x32", "touchEnabled": true}
+}

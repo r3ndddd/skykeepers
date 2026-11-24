@@ -1,0 +1,36 @@
+local Catalog=require('../src/shared/ResourceCatalog')
+local Inventory=require('../src/server/InventoryService')
+local Economy=require('../src/server/EconomyCore')
+local total,passed=0,0
+local function test(name,fn)
+ total+=1;local ok,err=pcall(fn);if ok then passed+=1;print('PASS '..name) else print('FAIL '..name..' '..tostring(err)) end
+end
+local function fixture()
+ local inv=Inventory.new(Catalog);local a={live=true,near=true};local b={live=true,near=true};inv:join(a);inv:join(b)
+ local econ=Economy.new(inv,Catalog,function(p)return p.live end,function(p)return p.near end)
+ return inv,econ,a,b
+end
+local function give(inv,p,id,n) for _=1,n do assert(inv:award(p,id,1)) end end
+test('one Cloudwood +5',function()local i,e,a=fixture();give(i,a,'Cloudwood',1);local ok,r=e:sell(a,'Cloudwood',1,'one');assert(ok and r.earned==5 and r.balance==5 and i:balance(a,'Cloudwood')==0)end)
+test('two Cloudwood +10',function()local i,e,a=fixture();give(i,a,'Cloudwood',2);local ok,r=e:sell(a,'Cloudwood',2,'two');assert(ok and r.earned==10 and r.balance==10 and i:balance(a,'Cloudwood')==0)end)
+test('Skyglass +12',function()local i,e,a=fixture();give(i,a,'Skyglass',1);local ok,r=e:sell(a,'Skyglass',1,'sky');assert(ok and r.earned==12)end)
+test('Starbloom +30',function()local i,e,a=fixture();give(i,a,'Starbloom',1);local ok,r=e:sell(a,'Starbloom',1,'star');assert(ok and r.earned==30)end)
+test('all catalog prices',function()local i,e,a=fixture();local prices={Cloudwood=5,Skyglass=12,Starbloom=30,Mistwood=12,Moonstone=30,AncientBark=80,StormEssence=30,CelestialOre=80,TempestCore=220};local sum=0;for id,price in pairs(prices) do give(i,a,id,1);local ok,r=e:sell(a,id,1,id);assert(ok and r.earned==price);sum+=price end;assert(i.sessions[a].coins==sum)end)
+test('insufficient leaves state untouched',function()local i,e,a=fixture();give(i,a,'Cloudwood',1);assert(not e:sell(a,'Cloudwood',2,'bad'));assert(i:balance(a,'Cloudwood')==1 and i.sessions[a].coins==0)end)
+test('zero negative fractional too large NaN and infinities',function()local i,e,a=fixture();give(i,a,'Cloudwood',1);for idx,v in {0,-1,.5,1e100,0/0,math.huge,-math.huge,'bad',true} do assert(not e:sell(a,'Cloudwood',v,'n'..idx))end;assert(i:balance(a,'Cloudwood')==1 and i.sessions[a].coins==0)end)
+test('unknown resource',function()local i,e,a=fixture();assert(not e:sell(a,'missing',1,'x'));assert(i.sessions[a].coins==0)end)
+test('client price argument is not used by core',function()local i,e,a=fixture();give(i,a,'Cloudwood',1);local ok,r=e:sell(a,'Cloudwood',1,'spoof',999999);assert(ok and r.earned==5 and r.balance==5)end)
+test('replayed request cannot double sell',function()local i,e,a=fixture();give(i,a,'Cloudwood',2);assert(e:sell(a,'Cloudwood',1,'same'));assert(not e:sell(a,'Cloudwood',1,'same'));assert(i.sessions[a].coins==5 and i:balance(a,'Cloudwood')==1)end)
+test('failed request id cannot later be replayed',function()local i,e,a=fixture();assert(not e:sell(a,'Cloudwood',1,'failed'));give(i,a,'Cloudwood',1);local ok,why=e:sell(a,'Cloudwood',1,'failed');assert(not ok and why=='duplicate' and i:balance(a,'Cloudwood')==1 and i.sessions[a].coins==0)end)
+test('sequential claims to last item',function()local i,e,a=fixture();give(i,a,'Cloudwood',1);assert(e:sell(a,'Cloudwood',1,'a'));assert(not e:sell(a,'Cloudwood',1,'b'));assert(i.sessions[a].coins==5)end)
+test('player leaves before operation',function()local i,e,a=fixture();give(i,a,'Cloudwood',1);i:leave(a);assert(not e:sell(a,'Cloudwood',1,'a'));assert(i.sessions[a]==nil)end)
+test('player not live or merchant too far',function()local i,e,a=fixture();give(i,a,'Cloudwood',1);a.live=false;assert(not e:sell(a,'Cloudwood',1,'a'));a.live=true;a.near=false;assert(not e:sell(a,'Cloudwood',1,'b'));assert(i.sessions[a].coins==0 and i:balance(a,'Cloudwood')==1)end)
+test('sell all actual owned count',function()local i,e,a=fixture();give(i,a,'Cloudwood',3);local ok,r=e:sell(a,'Cloudwood','all','all');assert(ok and r.quantity==3 and r.earned==15 and i:balance(a,'Cloudwood')==0)end)
+test('sell all empty',function()local i,e,a=fixture();assert(not e:sell(a,'Cloudwood','all','empty'));assert(i.sessions[a].coins==0)end)
+test('balance overflow denied atomically',function()local i,e,a=fixture();give(i,a,'Cloudwood',1);i.sessions[a].coins=9007199254740989;assert(not e:sell(a,'Cloudwood',1,'big'));assert(i:balance(a,'Cloudwood')==1 and i.sessions[a].coins==9007199254740989)end)
+test('balance and inventory isolation',function()local i,e,a,b=fixture();give(i,a,'Cloudwood',1);give(i,b,'Skyglass',1);assert(e:sell(a,'Cloudwood',1,'a'));assert(i.sessions[a].coins==5 and i.sessions[b].coins==0 and i:balance(b,'Skyglass')==1)end)
+test('fresh session resets coins and request ids',function()local i,e,a=fixture();give(i,a,'Cloudwood',1);assert(e:sell(a,'Cloudwood',1,'id'));i:leave(a);assert(i:join(a));assert(i.sessions[a].coins==0 and i:balance(a,'Cloudwood')==0);give(i,a,'Cloudwood',1);assert(e:sell(a,'Cloudwood',1,'id'))end)
+test('invalid ids and request size',function()local i,e,a=fixture();give(i,a,'Cloudwood',1);for _,v in {'','abc?',string.rep('a',65),42} do assert(not e:sell(a,'Cloudwood',1,v))end;assert(i.sessions[a].coins==0)end)
+test('corrupted inventory or balance refused',function()local i,e,a=fixture();give(i,a,'Cloudwood',1);for _,v in {-1,.5,0/0,math.huge,'5'}do i.sessions[a].coins=v;assert(not e:sell(a,'Cloudwood',1,'coin'))end;i.sessions[a].coins=0;i.sessions[a].counts.Cloudwood=0/0;assert(not e:sell(a,'Cloudwood',1,'stock'))end)
+test('replay storage limit does not alter state',function()local i,e,a=fixture();give(i,a,'Cloudwood',1);i.sessions[a].saleRequestCount=4096;assert(not e:sell(a,'Cloudwood',1,'new'));assert(i:balance(a,'Cloudwood')==1 and i.sessions[a].coins==0)end)
+print(string.format('TOTAL %d PASS %d FAIL %d',total,passed,total-passed));assert(total==passed,'economy tests failed')

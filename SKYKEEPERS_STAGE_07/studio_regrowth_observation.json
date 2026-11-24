@@ -1,0 +1,6 @@
+{
+  "method": "Studio multiplayer; Player2 programmatically held ProximityPrompt after recovery",
+  "before": {"treeAvailable": true, "promptEnabled": true, "player1Skyglass": 1, "player2Cloudwood": 0},
+  "clientPlayer2": {"Cloudwood": 1, "Skyglass": 0, "Starbloom": 0, "hud": "Cloudwood: 1"},
+  "serverAfter": {"treeAvailable": false, "player1": {"Skyglass": 1, "Cloudwood": 0, "Starbloom": 0}, "player2": {"Cloudwood": 1, "Skyglass": 0, "Starbloom": 0}}
+}

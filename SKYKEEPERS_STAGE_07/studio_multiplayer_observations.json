@@ -1,0 +1,59 @@
+{
+  "server": [
+    {
+      "players": [
+        {
+          "sky": 0,
+          "star": 0,
+          "name": "Player1",
+          "cloud": 0
+        },
+        {
+          "sky": 0,
+          "star": 0,
+          "name": "Player2",
+          "cloud": 0
+        }
+      ],
+      "available": true,
+      "time": 1795204191.678334,
+      "label": "before"
+    },
+    {
+      "players": [
+        {
+          "sky": 1,
+          "star": 0,
+          "name": "Player1",
+          "cloud": 0
+        },
+        {
+          "sky": 0,
+          "star": 0,
+          "name": "Player2",
+          "cloud": 0
+        }
+      ],
+      "available": false,
+      "time": 1795204193.193664,
+      "label": "after"
+    }
+  ],
+  "client1": {
+    "at": 1795204191.710838,
+    "hud": "Skyglass: 1",
+    "name": "Player1",
+    "star": 0,
+    "sky": 1,
+    "cloud": 0
+  },
+  "client2": {
+    "at": 1795204191.723111,
+    "hud": "Gather a resource",
+    "name": "Player2",
+    "star": 0,
+    "sky": 0,
+    "cloud": 0
+  },
+  "method": "Two Studio clients, synchronized replicated signal, Prompt InputHoldBegin/End"
+}

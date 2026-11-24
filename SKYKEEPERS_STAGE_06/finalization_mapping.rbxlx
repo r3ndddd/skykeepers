@@ -1,0 +1,198 @@
+<roblox version="4">
+  <Item class="ServerScriptService" referent="0">
+    <Properties>
+      <string name="Name">ServerScriptService</string>
+    </Properties>
+    <Item class="Folder" referent="1">
+      <Properties>
+        <string name="Name">SK_Stage06</string>
+      </Properties>
+      <Item class="Script" referent="2">
+        <Properties>
+          <string name="Name">FallRecovery</string>
+          <token name="RunContext">0</token>
+          <string name="Source"><![CDATA[-- Move only the character that actually fell; hysteresis and per-character cooldown prevent loops.
+local Players=game:GetService('Players')
+local RunService=game:GetService('RunService')
+local island=workspace:WaitForChild('SK_Stage06_Island')
+local spawn=island:WaitForChild('IslandSpawn')
+local last={}
+Players.PlayerRemoving:Connect(function(p) last[p]=nil end)
+local elapsed=0
+RunService.Heartbeat:Connect(function(dt)
+ elapsed+=dt
+ if elapsed<.25 then return end
+ elapsed=0
+ for _,p in Players:GetPlayers() do
+  local char=p.Character
+  local root=char and char:FindFirstChild('HumanoidRootPart')
+  local hum=char and char:FindFirstChildOfClass('Humanoid')
+  if root and hum and hum.Health>0 and root.Position.Y<15 and (not last[p] or os.clock()-last[p]>2) then
+   last[p]=os.clock(); char:PivotTo(spawn.CFrame+Vector3.new(0,4,0)); root.AssemblyLinearVelocity=Vector3.zero; root.AssemblyAngularVelocity=Vector3.zero
+  end
+ end
+end)
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="3">
+        <Properties>
+          <string name="Name">InventoryService</string>
+          <string name="Source"><![CDATA[-- Server-only, session-scoped inventory. No client chooses an award.
+local Inventory = {}
+Inventory.__index = Inventory
+local MAX = 9007199254740991
+function Inventory.new()
+ return setmetatable({sessions={}},Inventory)
+end
+function Inventory:join(player)
+ if player == nil or self.sessions[player] then return false end
+ self.sessions[player] = {Cloudwood=0, lastRequest=0, lastAt=-math.huge}
+ return true
+end
+function Inventory:leave(player)
+ self.sessions[player] = nil
+end
+function Inventory:balance(player)
+ local session=self.sessions[player]
+ return session and session.Cloudwood or nil
+end
+function Inventory:award(player, amount)
+ local session=self.sessions[player]
+ if not session or type(amount)~='number' or amount~=1 then return false end
+ local v=session.Cloudwood
+ if type(v)~='number' or v~=v or v<0 or v%1~=0 or v>=MAX then return false end
+ session.Cloudwood=v+1
+ return true
+end
+return Inventory
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="4">
+        <Properties>
+          <string name="Name">ResourceCore</string>
+          <string name="Source"><![CDATA[-- All inputs are constructed by the server-side adapter, never by a RemoteEvent client.
+local Resource = {}
+Resource.__index = Resource
+function Resource.new(inventory, playerLive, resourceLive)
+ return setmetatable({inventory=inventory,playerLive=playerLive,resourceLive=resourceLive,resources={}},Resource)
+end
+function Resource:register(id)
+ if id==nil or self.resources[id] then return false end
+ self.resources[id]={available=true}
+ return true
+end
+function Resource:restore(id)
+ local state=self.resources[id]
+ if not state or not self.resourceLive(id) then return false end
+ state.available=true
+ return true
+end
+function Resource:gather(player,id,request,amount,distance,now)
+ local session=self.inventory.sessions[player]
+ if not session or not self.playerLive(player) then return false,'player' end
+ local state=id~=nil and self.resources[id]
+ if not state or not self.resourceLive(id) then return false,'resource' end
+ if type(request)~='number' or request~=request or request==math.huge or request%1~=0 or request<=session.lastRequest then return false,'request' end
+ if type(distance)~='number' or distance~=distance or distance<0 or distance>12 then return false,'distance' end
+ if type(now)~='number' or now~=now or now==math.huge or now==-math.huge then return false,'time' end
+ if now-session.lastAt<0.5 then return false,'rate' end
+ if not state.available then return false,'unavailable' end
+ if not self.inventory:award(player,amount) then return false,'award' end
+ session.lastRequest=request; session.lastAt=now; state.available=false
+ return true,'ok'
+end
+return Resource
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="Script" referent="5">
+        <Properties>
+          <string name="Name">ResourceService</string>
+          <token name="RunContext">0</token>
+          <string name="Source"><![CDATA[local Players = game:GetService('Players')
+local ReplicatedStorage = game:GetService('ReplicatedStorage')
+local Inventory = require(script.Parent.InventoryService)
+local Resource = require(script.Parent.ResourceCore)
+local island = workspace:WaitForChild('SK_Stage06_Island')
+local remote = Instance.new('RemoteEvent'); remote.Name = 'SK_Stage06_Notice'; remote.Parent = ReplicatedStorage
+local inventory = Inventory.new()
+local function resourceLive(tree)
+ return typeof(tree)=='Instance' and tree:IsA('Model') and tree:IsDescendantOf(island.Resources) and tree:FindFirstChild('Trunk',true) ~= nil
+end
+local core=Resource.new(inventory,function(p) return p.Parent==Players end,resourceLive)
+local serial=0
+local function initialize(p)
+ if inventory:join(p) then p:SetAttribute('SK06_Cloudwood',0) end
+end
+Players.PlayerAdded:Connect(initialize)
+Players.PlayerRemoving:Connect(function(p) inventory:leave(p) end)
+for _,p in Players:GetPlayers() do initialize(p) end
+local function install(tree)
+ local trunk=tree:FindFirstChild('Trunk',true)
+ if not trunk or not trunk:IsA('BasePart') then warn('[SK06] Missing trunk '..tree.Name); return end
+ core:register(tree)
+ local prompt=Instance.new('ProximityPrompt'); prompt.Name='GatherCloudwood'; prompt.ActionText='Gather'; prompt.ObjectText='Cloudwood'; prompt.KeyboardKeyCode=Enum.KeyCode.E; prompt.MaxActivationDistance=10; prompt.HoldDuration=.35; prompt.RequiresLineOfSight=false; prompt.Parent=trunk
+ local indicator=Instance.new('BillboardGui'); indicator.Name='Regrowth'; indicator.Size=UDim2.fromOffset(150,34); indicator.StudsOffset=Vector3.new(0,5,0); indicator.AlwaysOnTop=true; indicator.Enabled=false; indicator.Parent=trunk
+ local label=Instance.new('TextLabel'); label.Size=UDim2.fromScale(1,1); label.BackgroundTransparency=.25; label.BackgroundColor3=Color3.fromRGB(35,63,72); label.TextColor3=Color3.new(1,1,1); label.Font=Enum.Font.GothamBold; label.TextSize=14; label.Text='Regrowing...'; label.Parent=indicator
+ local flash=Instance.new('Highlight'); flash.FillColor=Color3.fromRGB(160,240,255); flash.FillTransparency=.3; flash.OutlineTransparency=1; flash.Enabled=false; flash.Parent=tree
+ tree:SetAttribute('Available',true)
+ prompt.Triggered:Connect(function(p)
+  local root=p.Character and p.Character:FindFirstChild('HumanoidRootPart')
+  if not root then return end
+  serial+=1
+  local ok=core:gather(p,tree,serial,1,(root.Position-trunk.Position).Magnitude,os.clock())
+  if not ok then return end
+  tree:SetAttribute('Available',false); prompt.Enabled=false; indicator.Enabled=true; flash.Enabled=true
+  task.delay(.35,function() if flash.Parent then flash.Enabled=false end end)
+  p:SetAttribute('SK06_Cloudwood',inventory:balance(p)); remote:FireClient(p,'gathered')
+  local original=trunk.Color; trunk.Color=Color3.fromRGB(130,135,141)
+  task.delay(15,function()
+   if not core:restore(tree) then return end
+   trunk.Color=original; tree:SetAttribute('Available',true); prompt.Enabled=true; indicator.Enabled=false
+  end)
+ end)
+end
+for _,tree in island.Resources:GetChildren() do install(tree) end
+print('[SK06] resource service ready')
+]]></string>
+        </Properties>
+      </Item>
+    </Item>
+  </Item>
+  <Item class="StarterPlayer" referent="6">
+    <Properties>
+      <string name="Name">StarterPlayer</string>
+    </Properties>
+    <Item class="StarterPlayerScripts" referent="7">
+      <Properties>
+        <string name="Name">StarterPlayerScripts</string>
+      </Properties>
+      <Item class="Folder" referent="8">
+        <Properties>
+          <string name="Name">SK_Stage06</string>
+        </Properties>
+        <Item class="LocalScript" referent="9">
+          <Properties>
+            <string name="Name">Hud</string>
+            <string name="Source"><![CDATA[local Players = game:GetService('Players')
+local ReplicatedStorage = game:GetService('ReplicatedStorage')
+local player = Players.LocalPlayer
+local gui = Instance.new('ScreenGui'); gui.Name = 'SK06_HUD'; gui.ResetOnSpawn = false; gui.Parent = player:WaitForChild('PlayerGui')
+local panel = Instance.new('Frame'); panel.Size = UDim2.fromOffset(220,74); panel.Position = UDim2.new(0,16,0,16); panel.BackgroundColor3 = Color3.fromRGB(28,42,66); panel.BackgroundTransparency = 0.15; panel.Parent = gui
+local corner=Instance.new('UICorner'); corner.CornerRadius=UDim.new(0,12); corner.Parent=panel
+local title=Instance.new('TextLabel'); title.Size=UDim2.new(1,-16,0,30); title.Position=UDim2.fromOffset(8,4); title.BackgroundTransparency=1; title.Text='SKYKEEPERS'; title.Font=Enum.Font.GothamBold; title.TextSize=20; title.TextColor3=Color3.fromRGB(205,242,255); title.Parent=panel
+local count=Instance.new('TextLabel'); count.Size=UDim2.new(1,-16,0,28); count.Position=UDim2.fromOffset(8,36); count.BackgroundTransparency=1; count.Font=Enum.Font.Gotham; count.TextSize=16; count.TextColor3=Color3.new(1,1,1); count.Parent=panel
+local function update() count.Text='Cloudwood: '..tostring(player:GetAttribute('SK06_Cloudwood') or 0) end
+player:GetAttributeChangedSignal('SK06_Cloudwood'):Connect(update); update()
+local notice=Instance.new('TextLabel'); notice.AnchorPoint=Vector2.new(.5,0); notice.Position=UDim2.new(.5,0,0,100); notice.Size=UDim2.fromOffset(220,38); notice.BackgroundTransparency=.25; notice.BackgroundColor3=Color3.fromRGB(28,70,81); notice.TextColor3=Color3.new(1,1,1); notice.Font=Enum.Font.GothamBold; notice.TextSize=18; notice.Text='+1 Cloudwood'; notice.Visible=false; notice.Parent=gui
+local serial=0
+ReplicatedStorage:WaitForChild('SK_Stage06_Notice').OnClientEvent:Connect(function(kind) if kind ~= 'gathered' then return end serial+=1 local n=serial notice.Visible=true task.delay(2,function() if serial==n then notice.Visible=false end end) end)
+]]></string>
+          </Properties>
+        </Item>
+      </Item>
+    </Item>
+  </Item>
+</roblox>

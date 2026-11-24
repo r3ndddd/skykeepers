@@ -1,0 +1,34 @@
+{
+  "equal": true,
+  "counts": {
+    "SkyHeart": [
+      6,
+      6
+    ],
+    "Cottage": [
+      7,
+      7
+    ],
+    "Starbloom_Decor": [
+      9,
+      9
+    ],
+    "Skyglass_Decor": [
+      3,
+      3
+    ],
+    "Resources": [
+      12,
+      12
+    ]
+  },
+  "properties": [
+    "path",
+    "class",
+    "size",
+    "cf",
+    "mesh",
+    "anchored",
+    "collide"
+  ]
+}

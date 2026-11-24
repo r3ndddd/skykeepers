@@ -1,0 +1,9 @@
+{
+  "scope": "Studio Play after final RequestId patch was saved, before its final reopen; programmatic real client RemoteEvent and resource Prompt",
+  "initial": {"Cloudwood":0,"SkyCoins":0},
+  "first_request": {"requestId":"reopen-failed","result":"rejected: insufficient"},
+  "gather": {"Cloudwood":1},
+  "replay": {"requestId":"reopen-failed","result":"rejected: duplicate","Cloudwood":1,"SkyCoins":0},
+  "new_request": {"requestId":"final-valid","result":"sold","earned":5,"Cloudwood":0,"SkyCoins":5,"hud":"Sky Coins: 5"},
+  "studio_economy_module_tests":{"pass":22,"fail":0}
+}

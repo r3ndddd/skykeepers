@@ -1,0 +1,14 @@
+{
+  "method": "Two Studio test clients; positioned characters; resource Prompt API; synchronized RemoteEvent sales with replicated BoolValue signal",
+  "before": [{"player":"Player1","Cloudwood":3,"Skyglass":0,"Starbloom":0,"SkyCoins":0},{"player":"Player2","Cloudwood":0,"Skyglass":1,"Starbloom":1,"SkyCoins":0}],
+  "simultaneous": {
+    "player1": {"requestTime":1795206637.100518,"resource":"Cloudwood","quantity":1,"earned":5,"balance":5,"remaining":2,"hud":"Sky Coins: 5"},
+    "player2": {"requestTime":1795206637.096908,"resource":"Skyglass","quantity":1,"earned":12,"balance":12,"remaining":0,"hud":"Sky Coins: 12"}
+  },
+  "replay": {"requestId":"qa-repeat","result":"duplicate","Cloudwood":2,"SkyCoins":5},
+  "double_send": {"requestId":"qa-double","results":["sold 1 for 5","duplicate"],"Cloudwood":1,"SkyCoins":10},
+  "forged_extra_price_and_invalid_requests": {"Cloudwood":1,"SkyCoins":10,"notes":"Extra price argument did not alter state; negative, NaN and unknown id rejected. Extra-price packet was silently discarded."},
+  "after_player1_kick": {"player2":"Player2","resource":"Starbloom","quantity":"all (1)","earned":30,"SkyCoins":42,"Starbloom":0,"hud":"Sky Coins: 42"},
+  "new_session": {"added":"Player3","userId":-3,"SkyCoins":0,"Cloudwood":0,"Skyglass":0,"Starbloom":0,"same_identity_reconnect":"not tested; Player1 had UserId -1"},
+  "scope": "Programmatic Prompt and RemoteEvent inputs from real Studio test clients; no production publication or actual money."
+}

@@ -6,3 +6,18 @@ SKYKEEPERS_LUAU_PIPELINE/checks/
 *.blend1
 *.rbxl.lock
 *.rbxlx.lock
+
+# Local credentials and editor/OS cache; source, project assets and test logs stay tracked.
+.env
+.env.*
+!.env.example
+.netrc
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+token.json
+.DS_Store
+Thumbs.db
+.vscode/

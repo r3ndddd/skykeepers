@@ -1,0 +1,31 @@
+{
+  "source": "Roblox Studio MCP observations in separate private test universe; account UserId intentionally redacted",
+  "universeId": 10779228953,
+  "placeId": 88188721882111,
+  "session1": {
+    "initial": {"cloudwood": 0, "skyglass": 0, "skyCoins": 0},
+    "afterGather": {"cloudwood": 3, "skyglass": 1, "skyCoins": 0},
+    "afterSale": {"cloudwood": 2, "skyglass": 1, "skyCoins": 5},
+    "autoSaveRead": {"cloudwood": 2, "skyglass": 1, "skyCoins": 5, "lockPresent": true},
+    "afterStopRead": {"cloudwood": 2, "skyglass": 1, "skyCoins": 5, "lockPresent": false}
+  },
+  "session2": {
+    "sameUserId": true,
+    "loaded": {"cloudwood": 2, "skyglass": 1, "skyCoins": 5},
+    "afterGather": {"cloudwood": 3, "skyglass": 1, "skyCoins": 5},
+    "afterStopRead": {"cloudwood": 3, "skyglass": 1, "skyCoins": 5, "lockPresent": false}
+  },
+  "session3": {"sameUserId": true, "loaded": {"cloudwood": 3, "skyglass": 1, "skyCoins": 5}, "afterStopLockPresent": false},
+  "cloudLockHarness": {"acquired": true, "conflictRejected": true, "wrongOwnerRejected": true, "originalOwnerPreserved": true, "released": true, "twoActualServers": false},
+  "studioTwoClient": {
+    "testIds": [-1, -2],
+    "afterClient1Gather": [{"id": -1, "cloudwood": 1, "skyCoins": 0}, {"id": -2, "cloudwood": 0, "skyCoins": 0}],
+    "afterBothGather": [{"id": -1, "cloudwood": 1, "skyCoins": 0}, {"id": -2, "cloudwood": 1, "skyCoins": 0}],
+    "afterClient1Sale": [{"id": -1, "cloudwood": 0, "skyCoins": 5}, {"id": -2, "cloudwood": 1, "skyCoins": 0}],
+    "afterBothSale": [{"id": -1, "cloudwood": 0, "skyCoins": 5}, {"id": -2, "cloudwood": 0, "skyCoins": 5}],
+    "client1AfterDisconnectCloud": {"cloudwood": 0, "skyCoins": 5, "lockPresent": false},
+    "client2AfterClient1Disconnect": {"cloudwood": 1, "skyCoins": 5},
+    "client2AfterDisconnectCloud": {"cloudwood": 1, "skyCoins": 5, "lockPresent": false}
+  },
+  "warnings": ["Studio Play sessions, not separate Roblox production game servers", "Conflict harness first used a key exceeding 50 characters; retried with a shorter fresh key", "Server stop and PlayerRemoving/BindToClose were not isolated from each other in the three-session test"]
+}

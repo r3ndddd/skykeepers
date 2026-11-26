@@ -1,0 +1,12 @@
+PASS load paused
+PASS departure cancels loading
+PASS same identity blocked while load pending
+PASS late load releases and never activates
+PASS save pauses
+PASS concurrent save rejected
+PASS snapshot completes
+PASS later change remains dirty
+PASS next save persists change
+PASS replacement after expiry
+PASS old owner blocks after lock lost
+TOTAL 11 PASS / 0 FAIL

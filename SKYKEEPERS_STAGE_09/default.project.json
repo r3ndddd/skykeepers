@@ -1,0 +1,31 @@
+{
+  "name": "SKYKEEPERS_STAGE_08_ONLY",
+  "serveAddress": "127.0.0.1",
+  "servePort": 34878,
+  "tree": {
+    "$className": "DataModel",
+    "$ignoreUnknownInstances": true,
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "$ignoreUnknownInstances": true,
+      "SK_Stage07": {
+        "$className": "Folder", "$ignoreUnknownInstances": true,
+        "ResourceCatalog": {"$path": "src/shared/ResourceCatalog.luau"},
+        "DropService": {"$path": "src/server/DropService.luau"},
+        "InventoryService": {"$path": "src/server/InventoryService.luau"},
+        "ResourceCore": {"$path": "src/server/ResourceCore.luau"},
+        "ResourceService": {"$path": "src/server/ResourceService.server.luau"},
+        "SessionInventory": {"$path": "src/server/SessionInventory.luau"},
+        "EconomyCore": {"$path": "src/server/EconomyCore.luau"},
+        "MerchantService": {"$path": "src/server/MerchantService.server.luau"}
+      }
+    },
+    "StarterPlayer": {
+      "$className": "StarterPlayer", "$ignoreUnknownInstances": true,
+      "StarterPlayerScripts": {
+        "$className": "StarterPlayerScripts", "$ignoreUnknownInstances": true,
+        "SK_Stage07": {"$className": "Folder", "$ignoreUnknownInstances": true, "$path": "src/client"}
+      }
+    }
+  }
+}

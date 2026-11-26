@@ -1,0 +1,13 @@
+PASS transient load retries
+PASS same user cannot load twice
+PASS second owner denied
+PASS mark dirty
+PASS save
+PASS release
+PASS new session loads state
+PASS failed final save blocks session
+PASS failed save leaves last snapshot
+PASS blocked session cannot mark dirty
+PASS failed load creates no session
+PASS expired lock recovered
+TOTAL 12 PASS / 0 FAIL

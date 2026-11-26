@@ -1,0 +1,5 @@
+# Аудит DataStore
+
+Подключения к Roblox Cloud и изменений настроек API не было. Изучены официальные [Data stores](https://create.roblox.com/docs/cloud-services/data-stores), [player data and purchasing](https://create.roblox.com/docs/cloud-services/data-stores/player-data-purchasing) и [лимиты](https://create.roblox.com/docs/cloud-services/data-stores/error-codes-and-limits). UpdateAsync требует callback без yield, может отменить запись через nil, расходует бюджеты чтения и записи. Studio может обращаться к тому же хранилищу, что опубликованная игра; для настоящего тестирования нужна отдельная Experience.
+
+Экспериментальный lease 900 с и проверки owner/expiry внутри чистых преобразований исследуются только с mock. До использования нужны контролируемый heartbeat, уникальный токен для каждой сессии, строгий запрет действий после потери lease, защита от незавершённых запросов, оценка часов серверов и тесты повторного вызова callback. Локальный mock не моделирует повтор callback, реальные задержки, ограничения и отказы после возможной записи. Без этих мер и интеграционного аудита профиль использовать нельзя.

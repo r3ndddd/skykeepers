@@ -1,0 +1,18 @@
+PASS new profile
+PASS first acquire
+PASS conflict
+PASS short lease rejected
+PASS expired lock recovered
+PASS stale owner cannot save
+PASS expired owner cannot save
+PASS save and release
+PASS snapshot detached
+PASS reload
+PASS negative rejected
+PASS nan rejected
+PASS infinity rejected
+PASS unknown resource rejected
+PASS future schema rejected
+PASS missing field rejected
+PASS corrupt record not replaced
+TOTAL 17 PASS / 0 FAIL

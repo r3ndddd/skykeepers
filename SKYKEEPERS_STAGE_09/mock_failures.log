@@ -1,0 +1,7 @@
+PASS failed write leaves old profile untouched
+PASS write retry saves consistent sale
+PASS same key reloads saved values
+PASS competing server cannot acquire
+PASS stale writer cannot change state
+PASS load failure does not create empty profile
+TOTAL 6 PASS / 0 FAIL

@@ -11,9 +11,17 @@ local function refreshCoins() coins.Text="Sky Coins: "..tostring(player:GetAttri
 player:GetAttributeChangedSignal("SK08_SkyCoins"):Connect(refreshCoins);refreshCoins()
 local notice=Instance.new("TextLabel");notice.Name="GatherNotice";notice.AnchorPoint=Vector2.new(.5,0);notice.Position=UDim2.new(.5,0,0,145);notice.Size=UDim2.fromOffset(260,38);notice.BackgroundTransparency=.25;notice.BackgroundColor3=Color3.fromRGB(28,70,81);notice.TextColor3=Color3.new(1,1,1);notice.Font=Enum.Font.GothamBold;notice.TextSize=18;notice.Visible=false;notice.Parent=gui
 local serial=0
+local selectedId,selectedName="Cloudwood","Cloudwood"
+local ids={"Cloudwood","Skyglass","Starbloom","Mistwood","Moonstone","AncientBark","StormEssence","CelestialOre","TempestCore"}
+local function refreshCount()
+ local value=player:GetAttribute("SK07_"..selectedId)
+ count.Text=type(value)=="number" and (selectedName..": "..tostring(value)) or "Loading inventory..."
+end
+for _,id in ipairs(ids) do player:GetAttributeChangedSignal("SK07_"..id):Connect(function() if selectedId==id then refreshCount() end end) end
+refreshCount()
 ReplicatedStorage:WaitForChild("SK_Stage07_Notice").OnClientEvent:Connect(function(id,name,amount,balance)
  if type(id)~="string" or type(name)~="string" or amount~=1 or type(balance)~="number" then return end
- count.Text=name..": "..tostring(balance)
+ selectedId,selectedName=id,name;refreshCount()
  serial+=1;local n=serial;notice.Text="+"..amount.." "..name;notice.Visible=true
  task.delay(2,function() if serial==n then notice.Visible=false end end)
 end)

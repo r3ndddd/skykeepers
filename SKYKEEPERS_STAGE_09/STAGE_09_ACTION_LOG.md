@@ -1,5 +1,11 @@
 # Журнал действий
 
+- Продолжение 26–27.11: первый `Compress-Archive` завершился ошибкой из-за активного `.rbxl.lock`; создан Git archive чистого снимка `3fb184b` с SHA-256 `2B133F75DE39052CF146F6CDE037D122DED2DB18D1038BBBCB8AF3B6595065AC`.
+- Внесены изменения в Stage09 `src`, Rojo mapping, добавлены mock и тесты. Первый `luau-analyze` выявил ошибку сужения типа в проверке UserId; код исправлен, анализ повторно exit 0.
+- Локальный Rojo в sandbox не отвечал открытому Studio; перезапущен с разрешённым доступом и синхронизирован с локальным файлом Stage09. Play: сбор, продажа и HUD проверены; обнаружен и исправлен устаревший счётчик, повторный Play подтвердил исправление.
+- Локальный Studio сообщил `game.GameId=0`, `game.PlaceId=0`; это не cloud Experience. Начата подготовка новой отдельной Experience; пользователя попросили отключить Data Sharing, поскольку управление приватностью через computer-use запрещено.
+- CLI: `integrated_mock.log` 17/17, `integrated_failures.log` 24/24; Stage08 экономика 22/22. Studio console: Stage04 51/51, ошибка аудио остаётся.
+
 - 26.11.2026: прочитаны PROJECT_STATE, архитектура Stage08, Rojo mapping и аудит транзакций; Git main чист на старте.
 - Через PowerShell созданы отдельные копии исходников, place и резервного place; Stage08 SHA-256 `B4F9BE7F619DEB63360CDC5B79EEE4E7508EE7E2C80CAA626736E32D6D15D16B`.
 - Пользователь открыл локальный Stage09 в Studio и сообщил о входе. MCP подтвердил имя `SKYKEEPERS_STAGE_09.rbxl`, Edit, `persistedToCloud=false`. Публикации и изменений place не было.

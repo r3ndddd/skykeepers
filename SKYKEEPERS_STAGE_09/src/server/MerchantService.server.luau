@@ -13,18 +13,18 @@ local function near(player)
 end
 local core=Economy.new(inventory,Catalog,live,near)
 local function snapshot(player)
- local session=inventory.sessions[player]
+ local session=inventory:snapshot(player)
  if not session then return nil end
  local rows={}
- for id,item in pairs(Catalog.ById) do table.insert(rows,{id=id,name=item.name,price=item.value,count=session.counts[id]}) end
+ for id,item in pairs(Catalog.ById) do table.insert(rows,{id=id,name=item.name,price=item.value,count=session.Inventory[id]}) end
  table.sort(rows,function(a,b)return a.name<b.name end)
- return {coins=session.coins,rows=rows}
+ return {coins=session.SkyCoins,rows=rows}
 end
 local function send(player,kind,info)
  if live(player) then remote:FireClient(player,kind,info,snapshot(player)) end
 end
 local function ready(player)
- if inventory.sessions[player] then player:SetAttribute("SK08_SkyCoins",inventory.sessions[player].coins) end
+ local session=inventory:snapshot(player);if session then player:SetAttribute("SK08_SkyCoins",session.SkyCoins) end
 end
 Players.PlayerAdded:Connect(function(player) task.defer(function() ready(player) end) end)
 for _,player in Players:GetPlayers() do task.defer(function() ready(player) end) end

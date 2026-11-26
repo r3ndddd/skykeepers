@@ -1,0 +1,25 @@
+PASS repeated UpdateAsync callback acquisition
+PASS reward before save
+PASS failed write retry 1
+PASS failed write retry 2
+PASS failed write blocks future award
+PASS failed write does not replace data
+PASS budget exhaustion rejects without store call
+PASS load in flight
+PASS exit while loading
+PASS late load released
+PASS saving player loaded
+PASS saving player award
+PASS action denied while saving
+PASS exit waits for save
+PASS in-flight save completes
+PASS closing blocks new actions
+PASS final save releases lock
+PASS load stale-owner fixture
+PASS award stale-owner fixture
+PASS confirmed lock loss blocks save
+PASS confirmed lock loss blocks awards
+PASS other owner data remains intact
+PASS failed load preserves existing data
+PASS unknown migration rejected without overwrite
+TOTAL 24 PASS / 0 FAIL

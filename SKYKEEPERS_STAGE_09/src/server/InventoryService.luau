@@ -1,29 +1,19 @@
--- Session-only, no DataStore, no currency. Inventory operations do not yield.
-local Inventory={}
-Inventory.__index=Inventory
-local MAX=9007199254740991
-function Inventory.new(catalog)
- return setmetatable({catalog=catalog,sessions={}},Inventory)
-end
+-- Request metadata only; persistent fields belong to PlayerDataService.
+local Inventory={};Inventory.__index=Inventory
+function Inventory.new(catalog,data) return setmetatable({catalog=catalog,data=data,sessions={}},Inventory) end
 function Inventory:join(player)
- if player==nil or self.sessions[player] then return false end
- local counts={}
- for id in pairs(self.catalog.ById) do counts[id]=0 end
- self.sessions[player]={counts=counts,lastRequest=0,lastAt=-math.huge,coins=0,saleRequests={},saleRequestCount=0}
- return true
+ if not self.data or not self.data:active(player) or self.sessions[player] then return false end
+ self.sessions[player]={lastRequest=0,lastAt=-math.huge,saleRequests={},saleRequestCount=0};return true
 end
 function Inventory:leave(player) self.sessions[player]=nil end
 function Inventory:balance(player,id)
- local s=self.sessions[player]
- if not s or type(id)~="string" or not self.catalog.ById[id] then return nil end
- return s.counts[id]
+ if type(id)~="string" or not self.catalog.ById[id] then return nil end
+ local p=self.data:snapshot(player);return p and p.Inventory[id] or nil
 end
 function Inventory:award(player,id,amount)
- local s=self.sessions[player]
- if not s or type(id)~="string" or not self.catalog.ById[id] or amount~=1 then return false end
- local v=s.counts[id]
- if type(v)~="number" or v~=v or v<0 or v%1~=0 or v>=MAX then return false end
- s.counts[id]=v+1
- return true
+ if not self.sessions[player] or type(id)~="string" or not self.catalog.ById[id] or amount~=1 then return false end
+ return self.data:award(player,id)
 end
+function Inventory:snapshot(player) return self.data:snapshot(player) end
+function Inventory:sell(player,id,quantity,price) return self.data:sell(player,id,quantity,price) end
 return Inventory

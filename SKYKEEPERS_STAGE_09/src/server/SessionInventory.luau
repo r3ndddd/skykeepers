@@ -1,4 +1,9 @@
--- One shared session store for collection and transactions in this server.
+-- Explicit mock-only configuration. Never opens a Roblox DataStore.
 local Inventory=require(script.Parent.InventoryService)
 local Catalog=require(script.Parent.ResourceCatalog)
-return Inventory.new(Catalog)
+local Service=require(script.Parent.PlayerDataService)
+local Core=require(script.Parent.ProfileCore)
+local Mock=require(script.Parent.MockDataStore)
+local HttpService=game:GetService("HttpService")
+local data=Service.new(Core,Mock.new(),os.time,task.wait,function() return HttpService:GenerateGUID(false) end)
+return Inventory.new(Catalog,data)

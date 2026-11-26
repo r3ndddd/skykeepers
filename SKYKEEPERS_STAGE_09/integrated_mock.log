@@ -1,0 +1,18 @@
+PASS gather denied before load
+PASS sell denied before load
+PASS load then join
+PASS server gather
+PASS second server reward
+PASS atomic sale 1 to 5
+PASS duplicate sale denied
+PASS snapshot cannot mutate profile
+PASS concurrent server locked
+PASS second player isolated
+PASS save consistent pair
+PASS close releases
+PASS same userid reconnect
+PASS expired lease blocks awards and sales
+PASS blocked cannot save
+PASS load failure blocks profile
+PASS corrupt data not overwritten
+TOTAL 17 PASS / 0 FAIL

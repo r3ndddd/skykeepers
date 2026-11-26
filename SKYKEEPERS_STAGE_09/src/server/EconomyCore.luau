@@ -20,19 +20,8 @@ function Economy:sell(player,id,quantity,requestId)
  if type(id)~="string" or #id>64 then return false,"resource" end
  local item=self.catalog.ById[id]
  if not item then return false,"resource" end
- local owned=session.counts[id]
- if not integer(owned) or not integer(session.coins) then return false,"state" end
- if quantity=="all" then quantity=owned end
- if not integer(quantity) or quantity==0 then return false,"quantity" end
- if quantity>owned then return false,"insufficient" end
  local price=item.value
  if not integer(price) or price==0 then return false,"price" end
- if quantity>math.floor((MAX-session.coins)/price) then return false,"overflow" end
- local earned=quantity*price
- if not integer(earned) or earned>MAX-session.coins then return false,"overflow" end
- -- No yielding calls from checks through these writes: one Luau task commits together.
- session.counts[id]=owned-quantity
- session.coins+=earned
- return true,{id=id,quantity=quantity,earned=earned,balance=session.coins,remaining=session.counts[id]}
+ return self.inventory:sell(player,id,quantity,price)
 end
 return Economy

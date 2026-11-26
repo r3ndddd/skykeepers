@@ -12,15 +12,35 @@ local inventory=require(script.Parent.SessionInventory)
 local metrics=Instance.new("Folder");metrics.Name="SK_Stage07_Metrics";metrics.Parent=game:GetService("ServerStorage")
 local function updateMetrics() local n=0 for _ in pairs(inventory.sessions) do n+=1 end metrics:SetAttribute("ActiveSessions",n) end
 local function initialize(player)
- if inventory:join(player) then
-  for id in pairs(Catalog.ById) do player:SetAttribute("SK07_"..id,0) end
-  player:SetAttribute("SK08_SkyCoins",0)
-  updateMetrics()
- end
+ local ok=inventory.data:load(player)
+ if not ok then if player.Parent==Players then player:Kick("Не удалось загрузить профиль. Попробуйте снова.") end;return end
+ if player.Parent~=Players then inventory.data:close(player);return end
+ if not inventory:join(player) then inventory.data:close(player);return end
+ local profile=inventory:snapshot(player)
+ for id in pairs(Catalog.ById) do player:SetAttribute("SK07_"..id,profile.Inventory[id]) end
+ player:SetAttribute("SK08_SkyCoins",profile.SkyCoins)
+ updateMetrics()
 end
-Players.PlayerAdded:Connect(initialize)
-Players.PlayerRemoving:Connect(function(player) inventory:leave(player);updateMetrics() end)
-for _,player in Players:GetPlayers() do initialize(player) end
+Players.PlayerAdded:Connect(function(player) task.spawn(initialize,player) end)
+Players.PlayerRemoving:Connect(function(player) inventory:leave(player);updateMetrics();inventory.data:close(player) end)
+for _,player in Players:GetPlayers() do task.spawn(initialize,player) end
+task.spawn(function()
+ while true do
+  task.wait(180)
+  for player in pairs(inventory.sessions) do task.spawn(function()
+   if not inventory.data:save(player,false) and player.Parent==Players then player:Kick("Не удалось сохранить профиль. Попробуйте снова.") end
+  end) end
+ end
+end)
+game:BindToClose(function()
+ local pending=0
+ for player in pairs(inventory.sessions) do
+  inventory:leave(player);pending+=1
+  task.spawn(function() inventory.data:close(player);pending-=1 end)
+ end
+ local deadline=os.clock()+25
+ while pending>0 and os.clock()<deadline do task.wait(.1) end
+end)
 local nodes={}
 for _,node in island:WaitForChild("Resources"):GetChildren() do if node:IsA("Model") then nodes[node]=true end end
 for _,name in {"Skyglass_Decor","Starbloom_Decor"} do local node=island:FindFirstChild(name);if node and node:IsA("Model") then nodes[node]=true end end

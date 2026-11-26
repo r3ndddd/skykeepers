@@ -1,0 +1,607 @@
+<roblox version="4">
+  <Item class="ServerScriptService" referent="0">
+    <Properties>
+      <string name="Name">ServerScriptService</string>
+    </Properties>
+    <Item class="Folder" referent="1">
+      <Properties>
+        <string name="Name">SK_Stage07</string>
+      </Properties>
+      <Item class="ModuleScript" referent="2">
+        <Properties>
+          <string name="Name">DropService</string>
+          <string name="Source"><![CDATA[local Drop = {}
+local EPSILON=1e-9
+local function finite(x)
+ return type(x)=="number" and x==x and math.abs(x)<math.huge
+end
+function Drop.validate(rows, byId, zoneId)
+ if type(rows)~="table" or type(byId)~="table" or type(zoneId)~="string" then return false,"type" end
+ local n, maxIndex, sum=0,0,0
+ for k,row in pairs(rows) do
+  if not finite(k) or k<1 or k%1~=0 then return false,"index" end
+  n+=1;maxIndex=math.max(maxIndex,k)
+  if type(row)~="table" or type(row.id)~="string" or row.id=="" then return false,"resource" end
+  if byId[row.id]~=row or row.zone~=zoneId then return false,"resource" end
+  if not finite(row.probability) or row.probability<0 or row.probability>1 then return false,"probability" end
+  if not finite(row.value) or row.value<0 then return false,"value" end
+  sum+=row.probability
+ end
+ if n==0 or maxIndex~=n then return false,"empty_or_sparse" end
+ if not finite(sum) or math.abs(sum-1)>EPSILON then return false,"sum" end
+ return true
+end
+function Drop.choose(catalog, zoneId, randomValue)
+ if type(catalog)~="table" or type(catalog.Zones)~="table" or type(zoneId)~="string" then return nil,"zone" end
+ local zone=catalog.Zones[zoneId]
+ if not zone then return nil,"zone" end
+ local valid,reason=Drop.validate(zone.drops,catalog.ById,zoneId)
+ if not valid then return nil,reason end
+ if not finite(randomValue) or randomValue<0 or randomValue>=1 then return nil,"random" end
+ local cumulative=0
+ for _,row in ipairs(zone.drops) do
+  cumulative+=row.probability
+  if randomValue<cumulative then return row end
+ end
+ return nil,"uncovered_probability"
+end
+return Drop
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="3">
+        <Properties>
+          <string name="Name">EconomyCore</string>
+          <string name="Source"><![CDATA[-- Server-only transaction; injected liveness checks must not yield.
+local Economy={};Economy.__index=Economy
+local MAX=9007199254740991
+local MAX_REQUESTS=4096
+local function integer(n)
+ return type(n)=="number" and n==n and n>=0 and n<=MAX and n%1==0
+end
+function Economy.new(inventory,catalog,isPlayerLive,canTrade)
+ return setmetatable({inventory=inventory,catalog=catalog,isPlayerLive=isPlayerLive,canTrade=canTrade},Economy)
+end
+function Economy:sell(player,id,quantity,requestId)
+ local session=self.inventory.sessions[player]
+ if not session or not self.isPlayerLive(player) then return false,"player" end
+ if type(requestId)~="string" or #requestId<1 or #requestId>64 or not requestId:match("^[%w_%-]+$") then return false,"request" end
+ if session.saleRequests[requestId] then return false,"duplicate" end
+ if session.saleRequestCount>=MAX_REQUESTS then return false,"request_limit" end
+ session.saleRequests[requestId]=true
+ session.saleRequestCount+=1
+ if not self.canTrade(player) then return false,"merchant" end
+ if type(id)~="string" or #id>64 then return false,"resource" end
+ local item=self.catalog.ById[id]
+ if not item then return false,"resource" end
+ local price=item.value
+ if not integer(price) or price==0 then return false,"price" end
+ return self.inventory:sell(player,id,quantity,price)
+end
+return Economy
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="4">
+        <Properties>
+          <string name="Name">InventoryService</string>
+          <string name="Source"><![CDATA[-- Request metadata only; persistent fields belong to PlayerDataService.
+local Inventory={};Inventory.__index=Inventory
+function Inventory.new(catalog,data) return setmetatable({catalog=catalog,data=data,sessions={}},Inventory) end
+function Inventory:join(player)
+ if not self.data or not self.data:active(player) or self.sessions[player] then return false end
+ self.sessions[player]={lastRequest=0,lastAt=-math.huge,saleRequests={},saleRequestCount=0};return true
+end
+function Inventory:leave(player) self.sessions[player]=nil end
+function Inventory:balance(player,id)
+ if type(id)~="string" or not self.catalog.ById[id] then return nil end
+ local p=self.data:snapshot(player);return p and p.Inventory[id] or nil
+end
+function Inventory:award(player,id,amount)
+ if not self.sessions[player] or type(id)~="string" or not self.catalog.ById[id] or amount~=1 then return false end
+ return self.data:award(player,id)
+end
+function Inventory:snapshot(player) return self.data:snapshot(player) end
+function Inventory:sell(player,id,quantity,price) return self.data:sell(player,id,quantity,price) end
+return Inventory
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="Script" referent="5">
+        <Properties>
+          <string name="Name">MerchantService</string>
+          <token name="RunContext">0</token>
+          <string name="Source"><![CDATA[local Players=game:GetService("Players")
+local ReplicatedStorage=game:GetService("ReplicatedStorage")
+local Catalog=require(script.Parent.ResourceCatalog)
+local inventory=require(script.Parent.SessionInventory)
+local Economy=require(script.Parent.EconomyCore)
+local merchant=workspace:WaitForChild("SK_Stage08_Merchant")
+local point=merchant:WaitForChild("InteractionPoint")
+local remote=Instance.new("RemoteEvent");remote.Name="SK08_Merchant";remote.Parent=ReplicatedStorage
+local function live(player) return player.Parent==Players end
+local function near(player)
+ local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+ return root~=nil and merchant:IsDescendantOf(workspace) and point:IsDescendantOf(merchant) and (root.Position-point.Position).Magnitude<=12
+end
+local core=Economy.new(inventory,Catalog,live,near)
+local function snapshot(player)
+ local session=inventory:snapshot(player)
+ if not session then return nil end
+ local rows={}
+ for id,item in pairs(Catalog.ById) do table.insert(rows,{id=id,name=item.name,price=item.value,count=session.Inventory[id]}) end
+ table.sort(rows,function(a,b)return a.name<b.name end)
+ return {coins=session.SkyCoins,rows=rows}
+end
+local function send(player,kind,info)
+ if live(player) then remote:FireClient(player,kind,info,snapshot(player)) end
+end
+local function ready(player)
+ local session=inventory:snapshot(player);if session then player:SetAttribute("SK08_SkyCoins",session.SkyCoins) end
+end
+Players.PlayerAdded:Connect(function(player) task.defer(function() ready(player) end) end)
+for _,player in Players:GetPlayers() do task.defer(function() ready(player) end) end
+local prompt=Instance.new("ProximityPrompt");prompt.Name="MerchantPrompt";prompt.ActionText="Trade";prompt.ObjectText="Sky Merchant";prompt.MaxActivationDistance=10;prompt.HoldDuration=.35;prompt.RequiresLineOfSight=false;prompt.Parent=point
+prompt.Triggered:Connect(function(player) if near(player) and snapshot(player) then send(player,"open","") end end)
+remote.OnServerEvent:Connect(function(player,action,id,quantity,requestId,...)
+ if action~="sell" or select("#",...)~=0 then return end
+ local ok,result=core:sell(player,id,quantity,requestId)
+ if ok then
+  player:SetAttribute("SK07_"..result.id,result.remaining)
+  player:SetAttribute("SK08_SkyCoins",result.balance)
+  send(player,"sold",result)
+ else
+  send(player,"rejected",type(result)=="string" and result or "error")
+ end
+end)
+print("[SK08] merchant ready")
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="6">
+        <Properties>
+          <string name="Name">MockDataStore</string>
+          <string name="Source"><![CDATA[-- Volatile per-server mock. It never accesses Roblox Cloud.
+local Mock={};Mock.__index=Mock
+function Mock.new() return setmetatable({data={}},Mock) end
+function Mock:UpdateAsync(key,callback)
+ local nextValue=callback(self.data[key]);if nextValue~=nil then self.data[key]=nextValue end
+ return nextValue
+end
+return Mock
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="7">
+        <Properties>
+          <string name="Name">PlayerDataService</string>
+          <string name="Source"><![CDATA[-- Stage 0.9: injected backing store. Not enabled for a real DataStore.
+local Service = {}
+Service.__index = Service
+local states=setmetatable({},{__mode="k"})
+local MAX = 9007199254740991
+local function integer(n) return type(n)=="number" and n==n and n>=0 and n<=MAX and n%1==0 end
+function Service.new(core, store, clock, wait, newOwner, budget)
+ local self=setmetatable({core=core,store=store,clock=clock,wait=wait,newOwner=newOwner,budget=budget or function() return true end},Service)
+ states[self]={};return self
+end
+function Service:_update(key, transform)
+ for attempt=1,3 do
+  if self.budget() then
+   local ok,result=pcall(function() return self.store:UpdateAsync(key,transform) end)
+   if ok then return true,result end
+  end
+  if attempt<3 then self.wait(attempt) end
+ end
+ return false,nil
+end
+function Service:load(player)
+ if not player then return false,"player" end
+ local userId=player.UserId
+ if type(userId)~="number" or userId~=userId or userId==0 or userId%1~=0 or userId>MAX or userId < -MAX or states[self][player] then return false,"player" end
+ local s={state="LOADING",owner=self.newOwner(),key="user_"..tostring(player.UserId)}; states[self][player]=s
+ local ok,record=self:_update(s.key,function(old) return self.core.acquire(old,s.owner,self.clock(),900) end)
+ if s.state~="LOADING" then
+  if ok and record then self:_update(s.key,function(old) return self.core.save(old,s.owner,self.clock(),900,record.Profile,true) end) end
+  states[self][player]=nil; return false,"cancelled"
+ end
+ if not ok or not record then s.state="BLOCKED"; return false,"load-failed" end
+ s.profile=self.core.copy(record.Profile);s.expires=record.Lock.ExpiresAt;s.state="ACTIVE";s.revision=0;s.savedRevision=0
+ return true
+end
+function Service:active(player)
+ local s=states[self][player]
+ if s and s.state=="ACTIVE" and self.clock()<s.expires-30 then return true end
+ if s and s.state=="ACTIVE" then s.state="BLOCKED" end
+ return false
+end
+function Service:snapshot(player)
+ if not self:active(player) then return nil end
+ return self.core.copy(states[self][player].profile)
+end
+function Service:award(player,id)
+ if not self:active(player) then return false end
+ if type(id)~="string" then return false end
+ local s=states[self][player];local p=s.profile;local amount=p.Inventory[id]
+ if not integer(amount) or amount>=MAX then return false end
+ p.Inventory[id]=amount+1;s.revision+=1;return true
+end
+function Service:sell(player,id,quantity,price)
+ if not self:active(player) then return false,"inactive" end
+ if type(id)~="string" then return false,"resource" end
+ local s=states[self][player];local p=s.profile;local count=p.Inventory[id]
+ if not integer(count) or not integer(p.SkyCoins) or not integer(price) or price==0 then return false,"resource" end
+ if quantity=="all" then quantity=count end
+ if not integer(quantity) or quantity==0 then return false,"quantity" end
+ if quantity>count then return false,"insufficient" end
+ if quantity>math.floor((MAX-p.SkyCoins)/price) then return false,"overflow" end
+ local earned=quantity*price
+ p.Inventory[id]=count-quantity;p.SkyCoins+=earned;s.revision+=1
+ return true,{id=id,quantity=quantity,earned=earned,balance=p.SkyCoins,remaining=p.Inventory[id]}
+end
+function Service:save(player,release)
+ local s=states[self][player]
+ if not s or (s.state~="ACTIVE" and s.state~="CLOSING") then return false,"inactive" end
+ if s.state=="ACTIVE" and not self:active(player) then return false,"expired" end
+ if release then s.state="CLOSING" else s.state="SAVING" end
+ local snapshot=self.core.copy(s.profile);local revision=s.revision
+ local ok,record=self:_update(s.key,function(old) return self.core.save(old,s.owner,self.clock(),900,snapshot,release) end)
+ if not ok or not record then s.state="BLOCKED";return false,"save-failed-or-lock-lost" end
+ s.savedRevision=revision
+ if release then s.state="RELEASED";states[self][player]=nil else s.expires=record.Lock.ExpiresAt;s.state=s.closeRequested and "CLOSING" or "ACTIVE" end
+ return true
+end
+function Service:close(player)
+ local s=states[self][player];if not s then return true end
+ if s.state=="LOADING" then s.state="CLOSING";return true end
+ if s.state=="SAVING" then
+  s.closeRequested=true
+  while states[self][player]==s and s.state=="SAVING" do self.wait(.1) end
+ end
+ if s.state=="ACTIVE" then s.state="CLOSING" end
+ if s.state=="CLOSING" then return self:save(player,true) end
+ if s.state=="BLOCKED" then states[self][player]=nil end
+ return false
+end
+return Service
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="8">
+        <Properties>
+          <string name="Name">ProfileCore</string>
+          <string name="Source"><![CDATA[-- Prototype only: pure UpdateAsync transforms. Not connected to gameplay or cloud.
+local Core = {}
+local MAX = 9007199254740991
+local ids = {"Cloudwood", "Skyglass", "Starbloom", "Mistwood", "Moonstone", "AncientBark", "StormEssence", "CelestialOre", "TempestCore"}
+local allowed = {}
+for _, id in ipairs(ids) do allowed[id] = true end
+local function integer(n)
+ return type(n) == "number" and n == n and n >= 0 and n <= MAX and n % 1 == 0
+end
+function Core.newProfile()
+ local inventory = {}
+ for _, id in ipairs(ids) do inventory[id] = 0 end
+ return {SchemaVersion = 1, SkyCoins = 0, Inventory = inventory}
+end
+function Core.valid(p)
+ if type(p) ~= "table" or p.SchemaVersion ~= 1 or not integer(p.SkyCoins) or type(p.Inventory) ~= "table" then return false end
+ for key in pairs(p) do if key ~= "SchemaVersion" and key ~= "SkyCoins" and key ~= "Inventory" then return false end end
+ for id, n in pairs(p.Inventory) do if not allowed[id] or not integer(n) then return false end end
+ for _, id in ipairs(ids) do if not integer(p.Inventory[id]) then return false end end
+ return true
+end
+function Core.copy(p)
+ local inv = {}
+ for _, id in ipairs(ids) do inv[id] = p.Inventory[id] end
+ return {SchemaVersion = 1, SkyCoins = p.SkyCoins, Inventory = inv}
+end
+local function validRecord(record)
+ return type(record) == "table" and Core.valid(record.Profile) and
+  (record.Lock == nil or (type(record.Lock) == "table" and type(record.Lock.Owner) == "string" and #record.Lock.Owner > 0 and integer(record.Lock.ExpiresAt)))
+end
+function Core.acquire(record, owner, now, lease)
+ if type(owner) ~= "string" or #owner == 0 or not integer(now) or not integer(lease) or lease < 600 or now > MAX - lease then return nil end
+ if record ~= nil and not validRecord(record) then return nil end
+ if record and record.Lock and record.Lock.Owner ~= owner and record.Lock.ExpiresAt > now then return nil end
+ return {Profile = record and Core.copy(record.Profile) or Core.newProfile(), Lock = {Owner = owner, ExpiresAt = now + lease}}
+end
+function Core.save(record, owner, now, lease, snapshot, release)
+ if not validRecord(record) or not record.Lock or record.Lock.Owner ~= owner or not integer(now) or record.Lock.ExpiresAt <= now or not Core.valid(snapshot) then return nil end
+ if not release and (not integer(lease) or lease < 600 or now > MAX - lease) then return nil end
+ local result = {Profile = Core.copy(snapshot)}
+ if not release then result.Lock = {Owner = owner, ExpiresAt = now + lease} end
+ return result
+end
+return Core
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="9">
+        <Properties>
+          <string name="Name">ResourceCatalog</string>
+          <string name="Source"><![CDATA[-- All balance values are user-approved; rarity assignments await a GDD decision.
+local Catalog = {}
+Catalog.RarityLevels = table.freeze({"TIER_1", "TIER_2", "TIER_3", "TIER_4", "TIER_5"})
+Catalog.Zones = {
+ WhisperingMeadows = {name="Whispering Meadows", gathers=9, drops={
+  {id="Cloudwood", name="Cloudwood", probability=0.70, value=5},
+  {id="Skyglass", name="Skyglass", probability=0.25, value=12},
+  {id="Starbloom", name="Starbloom", probability=0.05, value=30},
+ }},
+ CrystalRuins = {name="Crystal Ruins", gathers=7, drops={
+  {id="Mistwood", name="Mistwood", probability=0.55, value=12},
+  {id="Moonstone", name="Moonstone", probability=0.40, value=30},
+  {id="AncientBark", name="Ancient Bark", probability=0.05, value=80},
+ }},
+ StormTemple = {name="Storm Temple", gathers=4, drops={
+  {id="StormEssence", name="Storm Essence", probability=0.60, value=30},
+  {id="CelestialOre", name="Celestial Ore", probability=0.38, value=80},
+  {id="TempestCore", name="Tempest Core", probability=0.02, value=220},
+ }},
+}
+Catalog.ById = {}
+for zoneId, zone in pairs(Catalog.Zones) do
+ for _, item in ipairs(zone.drops) do
+  assert(Catalog.ById[item.id] == nil, "duplicate resource id")
+  item.zone=zoneId
+  item.rarityStatus="PENDING_APPROVAL"
+  Catalog.ById[item.id]=item
+  table.freeze(item)
+ end
+ table.freeze(zone.drops)
+ table.freeze(zone)
+end
+table.freeze(Catalog.Zones)
+table.freeze(Catalog.ById)
+return table.freeze(Catalog)
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="10">
+        <Properties>
+          <string name="Name">ResourceCore</string>
+          <string name="Source"><![CDATA[-- Adapter creates every input on the server. Gather path and RNG must not yield.
+local Resource={};Resource.__index=Resource
+local function finite(x) return type(x)=="number" and x==x and math.abs(x)<math.huge end
+function Resource.new(inventory,catalog,drop,random,playerLive,resourceLive)
+ return setmetatable({inventory=inventory,catalog=catalog,drop=drop,random=random,playerLive=playerLive,resourceLive=resourceLive,resources={}},Resource)
+end
+function Resource:register(node,zone)
+ if node==nil or self.resources[node] or type(zone)~="string" or not self.catalog.Zones[zone] then return false end
+ self.resources[node]={available=true,zone=zone};return true
+end
+function Resource:restore(node)
+ local state=self.resources[node]
+ if not state or not self.resourceLive(node) then return false end
+ state.available=true;return true
+end
+function Resource:gather(player,node,request,distance,now)
+ local session=self.inventory.sessions[player]
+ if not session or not self.playerLive(player) then return false,"player" end
+ local state=node~=nil and self.resources[node]
+ if not state or not self.resourceLive(node) then return false,"resource" end
+ if not finite(request) or request%1~=0 or request<=session.lastRequest then return false,"request" end
+ if not finite(distance) or distance<0 or distance>12 then return false,"distance" end
+ if not finite(now) then return false,"time" end
+ if now-session.lastAt<0.5 then return false,"rate" end
+ if not state.available then return false,"unavailable" end
+ local selected,reason=self.drop.choose(self.catalog,state.zone,self.random())
+ if not selected then return false,reason end
+ if not self.inventory:award(player,selected.id,1) then return false,"award" end
+ session.lastRequest=request;session.lastAt=now;state.available=false
+ return true,selected
+end
+return Resource
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="Script" referent="11">
+        <Properties>
+          <string name="Name">ResourceService</string>
+          <token name="RunContext">0</token>
+          <string name="Source"><![CDATA[local Players=game:GetService("Players")
+local ReplicatedStorage=game:GetService("ReplicatedStorage")
+local Catalog=require(script.Parent.ResourceCatalog)
+local Drop=require(script.Parent.DropService)
+local Inventory=require(script.Parent.InventoryService)
+local Core=require(script.Parent.ResourceCore)
+local island=workspace:WaitForChild("SK_Stage06_Island")
+local zone="WhisperingMeadows"
+assert(Drop.validate(Catalog.Zones[zone].drops,Catalog.ById,zone),"invalid zone drops")
+local notice=Instance.new("RemoteEvent");notice.Name="SK_Stage07_Notice";notice.Parent=ReplicatedStorage
+local inventory=require(script.Parent.SessionInventory)
+local metrics=Instance.new("Folder");metrics.Name="SK_Stage07_Metrics";metrics.Parent=game:GetService("ServerStorage")
+local function updateMetrics() local n=0 for _ in pairs(inventory.sessions) do n+=1 end metrics:SetAttribute("ActiveSessions",n) end
+local function initialize(player)
+ local ok=inventory.data:load(player)
+ if not ok then if player.Parent==Players then player:Kick("Не удалось загрузить профиль. Попробуйте снова.") end;return end
+ if player.Parent~=Players then inventory.data:close(player);return end
+ if not inventory:join(player) then inventory.data:close(player);return end
+ local profile=inventory:snapshot(player)
+ for id in pairs(Catalog.ById) do player:SetAttribute("SK07_"..id,profile.Inventory[id]) end
+ player:SetAttribute("SK08_SkyCoins",profile.SkyCoins)
+ updateMetrics()
+end
+Players.PlayerAdded:Connect(function(player) task.spawn(initialize,player) end)
+Players.PlayerRemoving:Connect(function(player) inventory:leave(player);updateMetrics();inventory.data:close(player) end)
+for _,player in Players:GetPlayers() do task.spawn(initialize,player) end
+task.spawn(function()
+ while true do
+  task.wait(180)
+  for player in pairs(inventory.sessions) do task.spawn(function()
+   if not inventory.data:save(player,false) and player.Parent==Players then player:Kick("Не удалось сохранить профиль. Попробуйте снова.") end
+  end) end
+ end
+end)
+game:BindToClose(function()
+ local pending=0
+ for player in pairs(inventory.sessions) do
+  inventory:leave(player);pending+=1
+  task.spawn(function() inventory.data:close(player);pending-=1 end)
+ end
+ local deadline=os.clock()+25
+ while pending>0 and os.clock()<deadline do task.wait(.1) end
+end)
+local nodes={}
+for _,node in island:WaitForChild("Resources"):GetChildren() do if node:IsA("Model") then nodes[node]=true end end
+for _,name in {"Skyglass_Decor","Starbloom_Decor"} do local node=island:FindFirstChild(name);if node and node:IsA("Model") then nodes[node]=true end end
+local function nodeLive(node)
+ return typeof(node)=="Instance" and nodes[node]==true and node:IsDescendantOf(island) and node:FindFirstChildWhichIsA("BasePart",true)~=nil
+end
+local rng=Random.new()
+local core=Core.new(inventory,Catalog,Drop,function() return rng:NextNumber() end,function(p) return p.Parent==Players end,nodeLive)
+local serial=0
+local function install(node)
+ local part=node:FindFirstChild("Trunk",true) or node:FindFirstChildWhichIsA("BasePart",true)
+ if not part or not part:IsA("BasePart") or not core:register(node,zone) then warn("[SK07] Cannot install node "..node.Name);return end
+ node.Destroying:Connect(function() nodes[node]=nil;core.resources[node]=nil end)
+ local prompt=Instance.new("ProximityPrompt");prompt.Name="GatherResource";prompt.ActionText="Gather";prompt.ObjectText="Whispering Meadows";prompt.KeyboardKeyCode=Enum.KeyCode.E;prompt.MaxActivationDistance=10;prompt.HoldDuration=.35;prompt.RequiresLineOfSight=false;prompt.Parent=part
+ local indicator=Instance.new("BillboardGui");indicator.Name="Regrowth";indicator.Size=UDim2.fromOffset(150,34);indicator.StudsOffset=Vector3.new(0,5,0);indicator.AlwaysOnTop=true;indicator.Enabled=false;indicator.Parent=part
+ local label=Instance.new("TextLabel");label.Size=UDim2.fromScale(1,1);label.BackgroundTransparency=.25;label.BackgroundColor3=Color3.fromRGB(35,63,72);label.TextColor3=Color3.new(1,1,1);label.Font=Enum.Font.GothamBold;label.TextSize=14;label.Text="Regrowing...";label.Parent=indicator
+ local flash=Instance.new("Highlight");flash.FillColor=Color3.fromRGB(160,240,255);flash.FillTransparency=.3;flash.OutlineTransparency=1;flash.Enabled=false;flash.Parent=node
+ node:SetAttribute("Available",true)
+ prompt.Triggered:Connect(function(player)
+  local root=player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+  if not root then return end
+  serial+=1
+  local ok,selected=core:gather(player,node,serial,(root.Position-part.Position).Magnitude,os.clock())
+  if not ok then return end
+  node:SetAttribute("Available",false);prompt.Enabled=false;indicator.Enabled=true;flash.Enabled=true
+  task.delay(.35,function() if flash.Parent then flash.Enabled=false end end)
+  local balance=inventory:balance(player,selected.id)
+  player:SetAttribute("SK07_"..selected.id,balance)
+  notice:FireClient(player,selected.id,selected.name,1,balance)
+  task.delay(15,function()
+   if not core:restore(node) then return end
+   node:SetAttribute("Available",true);prompt.Enabled=true;indicator.Enabled=false
+  end)
+ end)
+end
+for node in pairs(nodes) do install(node) end
+print("[SK07] resource service ready")
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="12">
+        <Properties>
+          <string name="Name">SessionInventory</string>
+          <string name="Source"><![CDATA[-- Explicit mock-only configuration. Never opens a Roblox DataStore.
+local Inventory=require(script.Parent.InventoryService)
+local Catalog=require(script.Parent.ResourceCatalog)
+local Service=require(script.Parent.PlayerDataService)
+local Core=require(script.Parent.ProfileCore)
+local Mock=require(script.Parent.MockDataStore)
+local HttpService=game:GetService("HttpService")
+local data=Service.new(Core,Mock.new(),os.time,task.wait,function() return HttpService:GenerateGUID(false) end)
+return Inventory.new(Catalog,data)
+]]></string>
+        </Properties>
+      </Item>
+    </Item>
+  </Item>
+  <Item class="StarterPlayer" referent="13">
+    <Properties>
+      <string name="Name">StarterPlayer</string>
+    </Properties>
+    <Item class="StarterPlayerScripts" referent="14">
+      <Properties>
+        <string name="Name">StarterPlayerScripts</string>
+      </Properties>
+      <Item class="Folder" referent="15">
+        <Properties>
+          <string name="Name">SK_Stage07</string>
+        </Properties>
+        <Item class="LocalScript" referent="16">
+          <Properties>
+            <string name="Name">Hud</string>
+            <string name="Source"><![CDATA[local Players=game:GetService("Players")
+local ReplicatedStorage=game:GetService("ReplicatedStorage")
+local player=Players.LocalPlayer
+local gui=Instance.new("ScreenGui");gui.Name="SK07_HUD";gui.ResetOnSpawn=false;gui.Parent=player:WaitForChild("PlayerGui")
+local panel=Instance.new("Frame");panel.Size=UDim2.fromOffset(190,112);panel.Position=UDim2.fromOffset(16,16);panel.BackgroundColor3=Color3.fromRGB(28,42,66);panel.BackgroundTransparency=.15;panel.Parent=gui
+local corner=Instance.new("UICorner");corner.CornerRadius=UDim.new(0,12);corner.Parent=panel
+local title=Instance.new("TextLabel");title.Size=UDim2.new(1,-16,0,30);title.Position=UDim2.fromOffset(8,4);title.BackgroundTransparency=1;title.Text="SKYKEEPERS";title.Font=Enum.Font.GothamBold;title.TextSize=20;title.TextColor3=Color3.fromRGB(205,242,255);title.Parent=panel
+local count=Instance.new("TextLabel");count.Name="InventoryCount";count.Size=UDim2.new(1,-16,0,32);count.Position=UDim2.fromOffset(8,38);count.BackgroundTransparency=1;count.Font=Enum.Font.Gotham;count.TextSize=16;count.TextColor3=Color3.new(1,1,1);count.Text="Gather a resource";count.Parent=panel
+local coins=Instance.new("TextLabel");coins.Name="SkyCoins";coins.Size=UDim2.new(1,-16,0,24);coins.Position=UDim2.fromOffset(8,76);coins.BackgroundTransparency=1;coins.Font=Enum.Font.Gotham;coins.TextSize=16;coins.TextColor3=Color3.fromRGB(255,225,140);coins.Parent=panel
+local function refreshCoins() coins.Text="Sky Coins: "..tostring(player:GetAttribute("SK08_SkyCoins") or 0) end
+player:GetAttributeChangedSignal("SK08_SkyCoins"):Connect(refreshCoins);refreshCoins()
+local notice=Instance.new("TextLabel");notice.Name="GatherNotice";notice.AnchorPoint=Vector2.new(.5,0);notice.Position=UDim2.new(.5,0,0,145);notice.Size=UDim2.fromOffset(260,38);notice.BackgroundTransparency=.25;notice.BackgroundColor3=Color3.fromRGB(28,70,81);notice.TextColor3=Color3.new(1,1,1);notice.Font=Enum.Font.GothamBold;notice.TextSize=18;notice.Visible=false;notice.Parent=gui
+local serial=0
+local selectedId,selectedName="Cloudwood","Cloudwood"
+local ids={"Cloudwood","Skyglass","Starbloom","Mistwood","Moonstone","AncientBark","StormEssence","CelestialOre","TempestCore"}
+local function refreshCount()
+ local value=player:GetAttribute("SK07_"..selectedId)
+ count.Text=type(value)=="number" and (selectedName..": "..tostring(value)) or "Loading inventory..."
+end
+for _,id in ipairs(ids) do player:GetAttributeChangedSignal("SK07_"..id):Connect(function() if selectedId==id then refreshCount() end end) end
+refreshCount()
+ReplicatedStorage:WaitForChild("SK_Stage07_Notice").OnClientEvent:Connect(function(id,name,amount,balance)
+ if type(id)~="string" or type(name)~="string" or amount~=1 or type(balance)~="number" then return end
+ selectedId,selectedName=id,name;refreshCount()
+ serial+=1;local n=serial;notice.Text="+"..amount.." "..name;notice.Visible=true
+ task.delay(2,function() if serial==n then notice.Visible=false end end)
+end)
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="LocalScript" referent="17">
+          <Properties>
+            <string name="Name">Merchant</string>
+            <string name="Source"><![CDATA[local Players=game:GetService("Players")
+local HttpService=game:GetService("HttpService")
+local remote=game:GetService("ReplicatedStorage"):WaitForChild("SK08_Merchant")
+local player=Players.LocalPlayer
+local gui=Instance.new("ScreenGui");gui.Name="SK08_MerchantUI";gui.ResetOnSpawn=false;gui.DisplayOrder=10;gui.Parent=player:WaitForChild("PlayerGui")
+local frame=Instance.new("Frame");frame.Name="MerchantPanel";frame.AnchorPoint=Vector2.new(.5,.5);frame.Position=UDim2.fromScale(.5,.5);frame.Size=UDim2.new(1,-24,.8,0);frame.BackgroundColor3=Color3.fromRGB(28,42,66);frame.Visible=false;frame.Parent=gui
+local limits=Instance.new("UISizeConstraint");limits.MaxSize=Vector2.new(440,600);limits.Parent=frame
+local corner=Instance.new("UICorner");corner.CornerRadius=UDim.new(0,12);corner.Parent=frame
+local function text(parent,name,pos,size,textSize)
+ local x=Instance.new("TextLabel");x.Name=name;x.Position=pos;x.Size=size;x.BackgroundTransparency=1;x.Font=Enum.Font.Gotham;x.TextSize=textSize;x.TextColor3=Color3.new(1,1,1);x.TextXAlignment=Enum.TextXAlignment.Left;x.Parent=parent;return x
+end
+local title=text(frame,"Title",UDim2.fromOffset(14,8),UDim2.new(1,-72,0,32),20);title.Text="Sky Merchant"
+local close=Instance.new("TextButton");close.Name="Close";close.Position=UDim2.new(1,-48,0,8);close.Size=UDim2.fromOffset(40,40);close.Text="×";close.TextSize=24;close.Font=Enum.Font.Gotham;close.Parent=frame
+close.Activated:Connect(function()frame.Visible=false end)
+local coins=text(frame,"Coins",UDim2.fromOffset(14,45),UDim2.new(1,-28,0,26),16);coins.Text="Sky Coins: 0"
+local message=text(frame,"Message",UDim2.fromOffset(14,72),UDim2.new(1,-28,0,30),14);message.Text="Select a resource to sell."
+local list=Instance.new("ScrollingFrame");list.Name="Resources";list.Position=UDim2.fromOffset(10,106);list.Size=UDim2.new(1,-20,1,-118);list.BackgroundTransparency=1;list.BorderSizePixel=0;list.ScrollBarThickness=6;list.CanvasSize=UDim2.new();list.AutomaticCanvasSize=Enum.AutomaticSize.Y;list.Parent=frame
+local layout=Instance.new("UIListLayout");layout.Padding=UDim.new(0,6);layout.SortOrder=Enum.SortOrder.LayoutOrder;layout.Parent=list
+local rows={}
+local function mkButton(parent,label,x)
+ local b=Instance.new("TextButton");b.Name=label=="1" and "SellOne" or "SellAll";b.AnchorPoint=Vector2.new(1,0);b.Position=UDim2.new(1,x,0,2);b.Size=UDim2.fromOffset(54,46);b.Text=label;b.TextSize=16;b.Font=Enum.Font.GothamBold;b.BackgroundColor3=Color3.fromRGB(54,100,114);b.TextColor3=Color3.new(1,1,1);b.Parent=parent;return b
+end
+local function render(data)
+ if type(data)~="table" or type(data.rows)~="table" then return end
+ coins.Text="Sky Coins: "..tostring(data.coins)
+ for index,item in ipairs(data.rows) do
+  local row=rows[item.id]
+  if not row then
+   local container=Instance.new("Frame");container.Name=item.id;container.Size=UDim2.new(1,-4,0,50);container.BackgroundColor3=Color3.fromRGB(42,61,82);container.Parent=list
+   local label=text(container,"Label",UDim2.fromOffset(8,2),UDim2.new(1,-130,1,-4),14);label.TextWrapped=true
+   local one=mkButton(container,"1",-64);local all=mkButton(container,"All",-4)
+   local id=item.id
+   local function sell(amount) remote:FireServer("sell",id,amount,HttpService:GenerateGUID(false)) end
+   one.Activated:Connect(function() sell(1) end);all.Activated:Connect(function() sell("all") end)
+   row={container=container,label=label,name=item.name,price=item.price};rows[id]=row
+   player:GetAttributeChangedSignal("SK07_"..id):Connect(function()
+    local count=player:GetAttribute("SK07_"..id)
+    if type(count)=="number" then row.label.Text=row.name.."  ×"..tostring(count).."\n"..tostring(row.price).." SC each" end
+   end)
+  end
+  row.name=item.name;row.price=item.price;row.container.LayoutOrder=index
+  row.label.Text=item.name.."  ×"..tostring(item.count).."\n"..tostring(item.price).." SC each"
+ end
+end
+remote.OnClientEvent:Connect(function(kind,info,data)
+ if kind=="open" then frame.Visible=true;message.Text="Select a resource to sell."
+ elseif kind=="sold" and type(info)=="table" then message.Text="Sold "..tostring(info.quantity).." for "..tostring(info.earned).." SC."
+ elseif kind=="rejected" then message.Text="Sale declined: "..tostring(info) end
+ render(data)
+end)
+]]></string>
+          </Properties>
+        </Item>
+      </Item>
+    </Item>
+  </Item>
+</roblox>

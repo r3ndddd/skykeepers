@@ -1,7 +1,7 @@
 {
-  "name": "SKYKEEPERS_STAGE_08_ONLY",
+  "name": "SKYKEEPERS_STAGE_09_MOCK_ONLY",
   "serveAddress": "127.0.0.1",
-  "servePort": 34878,
+  "servePort": 34872,
   "tree": {
     "$className": "DataModel",
     "$ignoreUnknownInstances": true,
@@ -13,6 +13,9 @@
         "ResourceCatalog": {"$path": "src/shared/ResourceCatalog.luau"},
         "DropService": {"$path": "src/server/DropService.luau"},
         "InventoryService": {"$path": "src/server/InventoryService.luau"},
+        "PlayerDataService": {"$path": "src/server/PlayerDataService.luau"},
+        "ProfileCore": {"$path": "prototype/ProfileCore.luau"},
+        "MockDataStore": {"$path": "src/server/MockDataStore.luau"},
         "ResourceCore": {"$path": "src/server/ResourceCore.luau"},
         "ResourceService": {"$path": "src/server/ResourceService.server.luau"},
         "SessionInventory": {"$path": "src/server/SessionInventory.luau"},

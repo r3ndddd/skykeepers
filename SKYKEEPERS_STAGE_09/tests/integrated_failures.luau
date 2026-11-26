@@ -1,11 +1,13 @@
 local Core=require('../prototype/ProfileCore');local Data=require('../src/server/PlayerDataService');local Mock=require('../src/server/MockDataStore')
-local base=Mock.new();local now=1000;local uid=0;local fails=0;local calls=0;local replay=false;local pause=false;local budget=true
+local base=Mock.new();local now=1000;local uid=0;local fails=0;local calls=0;local replay=false;local pause=false;local budget=true;local failAfterCommit=false
 local proxy={}
 function proxy:UpdateAsync(key,fn)
  calls+=1;if fails>0 then fails-=1;error('test fault') end
  if pause then coroutine.yield('waiting') end
  if replay then fn(base.data[key]) end
- return base:UpdateAsync(key,fn)
+ local result=base:UpdateAsync(key,fn)
+ if failAfterCommit then failAfterCommit=false;error('simulated lost response after commit') end
+ return result
 end
 local svc=Data.new(Core,proxy,function()return now end,function()coroutine.yield('wait')end,function()uid+=1;return 'id-'..uid end,function()return budget end)
 local n=0;local function check(name,ok)n+=1;assert(ok,'FAIL '..name);print('PASS '..name)end
@@ -47,4 +49,14 @@ coroutine.resume(failedLoad);coroutine.resume(failedLoad);local done,loadedAgain
 check('failed load preserves existing data',done and not loadedAgain and base.data.user_76==original and base.data.user_76.Profile.SkyCoins==42 and not svc:award(p6,'Cloudwood'))
 local p7={UserId=77};base.data.user_77={Profile=Core.newProfile()};base.data.user_77.Profile.SchemaVersion=9
 check('unknown migration rejected without overwrite',not svc:load(p7) and base.data.user_77.Profile.SchemaVersion==9)
+local p8={UserId=78};check('uncertain write fixture load',svc:load(p8));check('uncertain write fixture award',svc:award(p8,'Cloudwood'))
+failAfterCommit=true
+local uncertain=coroutine.create(function()return svc:save(p8,false)end)
+local u,waitState=coroutine.resume(uncertain);check('committed write can lose response',u and waitState=='wait' and base.data.user_78.Profile.Inventory.Cloudwood==1)
+local resumed,savedAgain=coroutine.resume(uncertain)
+check('retry applies snapshot once',resumed and savedAgain and base.data.user_78.Profile.Inventory.Cloudwood==1)
+local badBudget=Data.new(Core,base,function()return now end,function()end,function()return 'bad-budget-owner' end,function()error('budget unavailable')end)
+local noBudgetPlayer={UserId=79}
+local budgetCallOk,loadedWithBadBudget=pcall(function()return badBudget:load(noBudgetPlayer)end)
+check('budget exception fails closed without uncaught error',budgetCallOk and not loadedWithBadBudget and not badBudget:award(noBudgetPlayer,'Cloudwood') and base.data.user_79==nil)
 print('TOTAL '..n..' PASS / 0 FAIL')

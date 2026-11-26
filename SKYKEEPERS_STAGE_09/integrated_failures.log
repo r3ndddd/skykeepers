@@ -22,4 +22,9 @@ PASS confirmed lock loss blocks awards
 PASS other owner data remains intact
 PASS failed load preserves existing data
 PASS unknown migration rejected without overwrite
-TOTAL 24 PASS / 0 FAIL
+PASS uncertain write fixture load
+PASS uncertain write fixture award
+PASS committed write can lose response
+PASS retry applies snapshot once
+PASS budget exception fails closed without uncaught error
+TOTAL 29 PASS / 0 FAIL

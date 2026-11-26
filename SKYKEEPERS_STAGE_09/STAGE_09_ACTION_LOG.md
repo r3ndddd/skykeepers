@@ -1,5 +1,9 @@
 # Журнал действий
 
+- 27.11: после того как пользователь отключил Data Sharing, через UI создана отдельная закрытая Experience `SKYKEEPERS_STAGE_09_DATA_TEST`, Universe 10779228953 / Place 88188721882111. Основная Experience не публиковалась.
+- Открыт Experience Settings → Security; пользователь самостоятельно включил Studio API Access. MCP `GetAsync` для отдельного пустого test key: PASS. MCP `UpdateAsync` того же ключа: `502 ... Access forbidden`; `universe-datastores.objects:update` запрошено, обход не выполнялся.
+- Создан отдельный `cloud-test.project.json` с guard на конкретный Universe, собран Rojo. Исправлена обработка исключения budget callback; тесты расширены, 29/29 mock PASS. Отдельно пользователь восстановил свёрнутое окно Studio по просьбе из-за ошибки активации.
+
 - Продолжение 26–27.11: первый `Compress-Archive` завершился ошибкой из-за активного `.rbxl.lock`; создан Git archive чистого снимка `3fb184b` с SHA-256 `2B133F75DE39052CF146F6CDE037D122DED2DB18D1038BBBCB8AF3B6595065AC`.
 - Внесены изменения в Stage09 `src`, Rojo mapping, добавлены mock и тесты. Первый `luau-analyze` выявил ошибку сужения типа в проверке UserId; код исправлен, анализ повторно exit 0.
 - Локальный Rojo в sandbox не отвечал открытому Studio; перезапущен с разрешённым доступом и синхронизирован с локальным файлом Stage09. Play: сбор, продажа и HUD проверены; обнаружен и исправлен устаревший счётчик, повторный Play подтвердил исправление.

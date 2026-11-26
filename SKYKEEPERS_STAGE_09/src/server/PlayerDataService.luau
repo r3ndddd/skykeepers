@@ -10,7 +10,8 @@ function Service.new(core, store, clock, wait, newOwner, budget)
 end
 function Service:_update(key, transform)
  for attempt=1,3 do
-  if self.budget() then
+  local budgetOk,available=pcall(self.budget)
+  if budgetOk and available then
    local ok,result=pcall(function() return self.store:UpdateAsync(key,transform) end)
    if ok then return true,result end
   end
